@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Tutorial3Android"
+        tools:targetApi="31">
+        <activity
+            android:name=".DeletegameActivity"
+            android:exported="false" />
+        <activity
+            android:name=".game_editlist_Activity"
+            android:exported="false" />
+        <activity
+            android:name=".accountActivity"
+            android:exported="false" />
+        <activity
+            android:name=".addgenreActivity"
+            android:exported="false" />
+        <activity
+            android:name=".pick_genreActivity"
+            android:exported="false" />
+        <activity
+            android:name=".gamelist"
+            android:exported="false" />
+        <activity
+            android:name=".buygame"
+            android:exported="false" />
+        <activity
+            android:name=".editgame"
+            android:exported="false" />
+        <activity
+            android:name=".AddGameActivity"
+            android:exported="false" />
+        <activity
+            android:name=".adminpage"
+            android:exported="false" />
+        <activity
+            android:name=".usermenuActivity"
+            android:exported="false" />
+        <activity
+            android:name=".communityActivity"
+            android:exported="false" />
+        <activity
+            android:name=".profileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".recieptActivity"
+            android:exported="false" />
+        <activity
+            android:name=".tngActivity"
+            android:exported="false" />
+        <activity
+            android:name=".login_success"
+            android:exported="true" />
+        <activity
+            android:name=".payment_successActivity"
+            android:exported="true" />
+        <activity
+            android:name=".registerActivity"
+            android:exported="true" />
+        <activity
+            android:name=".loginActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.login.login"
+            android:exported="true"
+            android:label="@string/title_activity_login" /> <!-- Add other activities as needed -->
+        <activity
+            android:name=".SearchActivity"
+            android:exported="true" />
+        <activity
+            android:name=".fpsActivity"
+            android:exported="true" />
+        <activity
+            android:name=".advActivity"
+            android:exported="true" />
+        <activity
+            android:name=".rpgActivity"
+            android:exported="true" />
+        <activity
+            android:name=".delete_genre_Activity"
+            android:exported="false" />
+        <activity
+            android:name=".rtsActivity"
+            android:exported="true" />
+        <activity
+            android:name=".simActivity"
+            android:exported="true" />
+        <activity
+            android:name=".sandboxActivity"
+            android:exported="true" />
+        <activity
+            android:name=".minecraftActivity"
+            android:exported="true" />
+        <activity
+            android:name=".csgoActivity"
+            android:exported="true" />
+        <activity
+            android:name=".elden_ringActivity"
+            android:exported="true" />
+        <activity
+            android:name=".starcraft2Activity"
+            android:exported="true" />
+        <activity
+            android:name=".stardew_valleyActivity"
+            android:exported="true" />
+        <activity
+            android:name=".strayActivity"
+            android:exported="true" />
+        <activity
+            android:name=".valorantActivity"
+            android:exported="true" />
+        <activity
+            android:name=".debit_cardActivity"
+            android:exported="true" />
+        <activity
+            android:name=".fpxActivity"
+            android:exported="true" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true" />
+    </application>
+
+</manifest>
