@@ -1,5 +1,6 @@
 package com.example.tutorial3android;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,11 @@ public class GameListAdapter extends RecyclerView.Adapter<GameListAdapter.GameVi
 
     public GameListAdapter(List<String> gameNames) {
         this.gameNames = new ArrayList<>(gameNames);
+    }
+
+    public void clearList() {
+        gameNames.clear();
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -90,5 +96,23 @@ public class GameListAdapter extends RecyclerView.Adapter<GameListAdapter.GameVi
             super(itemView);
             gameNameTextView = itemView.findViewById(R.id.textViewGameName);
         }
+    }
+
+    public void onItemClick(int position) {
+        String selectedGameName = gameNames.get(position);
+        if (!TextUtils.isEmpty(selectedGameName)) {
+            if (onItemClickListener != null) {
+                onItemClickListener.onItemClick(position);
+            }
+        } else {
+            // Handle the case where the game name is empty or null, e.g., show an error message
+            Log.e(TAG, "onItemClick: Invalid game name at position " + position);
+        }
+    }
+
+    // Method to start DeletegameActivity
+    private void startDeleteGameActivity(String selectedGameName) {
+        // Implement the logic to start DeletegameActivity
+        // ...
     }
 }

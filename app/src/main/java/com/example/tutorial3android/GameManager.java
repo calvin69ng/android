@@ -36,6 +36,10 @@ public class GameManager {
                 COL_GENRE + " TEXT);");
     }
 
+    public void deleteAllGames() {
+        database.delete(TABLE_NAME_GAMES, null, null);
+    }
+
     public long insertGame(game_data gameData) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL_NAME, gameData.getName());

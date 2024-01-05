@@ -26,6 +26,11 @@ public class game_editlist_Activity extends AppCompatActivity {
     private List<String> originalGameNames;
     private GameListAdapter adapter;
 
+    // Added OnDeletionCompleteListener interface
+    public interface OnDeletionCompleteListener {
+        void onDeletionComplete();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +74,15 @@ public class game_editlist_Activity extends AppCompatActivity {
             }
         });
 
+        Button clearAllDataButton = findViewById(R.id.clearAllDataButton);
+        clearAllDataButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Delete all games when the button is clicked
+                gameManager.deleteAllGames();
+            }
+        });
+
         Button backButton = findViewById(R.id.button15);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,28 +98,31 @@ public class game_editlist_Activity extends AppCompatActivity {
         Log.d(TAG, "filterList: Filtering with query: " + query);
         List<String> filteredList = new ArrayList<>();
 
-        if (query == null || query.isEmpty()) {
-            filteredList.addAll(originalGameNames);
-        } else {
-            for (String gameName : originalGameNames) {
-                if (gameName != null && gameName.toLowerCase().contains(query.toLowerCase())) {
-                    filteredList.add(gameName);
-                }
+        for (String gameName : originalGameNames) {
+            if (gameName != null && (query == null || gameName.toLowerCase().contains(query.toLowerCase()))) {
+                filteredList.add(gameName);
             }
         }
 
         Log.d(TAG, "filterList: Filtered list size: " + filteredList.size());
 
-        // Delete games with empty or null names
-        deleteGamesWithEmptyNames(filteredList);
+        // Delete games with empty or null names before updating the adapter
+        deleteGamesWithEmptyNames(originalGameNames);
 
+        // Notify the listener when deletion is complete
+        OnDeletionCompleteListener listener = (OnDeletionCompleteListener) this;
+        if (listener != null) {
+            listener.onDeletionComplete();
+        }
+
+        // Update the adapter with the filtered list
         adapter.updateList(filteredList);
     }
 
     private void deleteGamesWithEmptyNames(List<String> gameNames) {
         for (String gameName : gameNames) {
             if (TextUtils.isEmpty(gameName)) {
-                // Get the game by name
+                // Delete the game with an empty name
                 game_data gameToDelete = gameManager.getGameByName(gameName);
 
                 // Check if the game exists
@@ -115,6 +132,14 @@ public class game_editlist_Activity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    private void deleteAllGames() {
+        // Delete all games from the database
+        gameManager.deleteAllGames();
+
+        // Clear the list in the adapter and update the RecyclerView
+        adapter.clearList();
     }
 
     private void startDeleteGameActivity(String selectedGameName) {
