@@ -3,7 +3,6 @@ package com.example.tutorial3android;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
@@ -25,11 +24,6 @@ public class game_editlist_Activity extends AppCompatActivity {
     private GameManager gameManager;
     private List<String> originalGameNames;
     private GameListAdapter adapter;
-
-    // Added OnDeletionCompleteListener interface
-    public interface OnDeletionCompleteListener {
-        void onDeletionComplete();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,15 +68,20 @@ public class game_editlist_Activity extends AppCompatActivity {
             }
         });
 
+        // Button for clearing all data (without affecting RecyclerView)
         Button clearAllDataButton = findViewById(R.id.clearAllDataButton);
         clearAllDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Delete all games when the button is clicked
+                // Delete all games from the database
                 gameManager.deleteAllGames();
+
+                // Clear the list in the adapter without updating the RecyclerView
+                adapter.clearList();
             }
         });
 
+        // Button for navigating back
         Button backButton = findViewById(R.id.button15);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,43 +103,17 @@ public class game_editlist_Activity extends AppCompatActivity {
             }
         }
 
+        Log.d(TAG, "filterList: Original list size: " + originalGameNames.size());
         Log.d(TAG, "filterList: Filtered list size: " + filteredList.size());
 
-        // Delete games with empty or null names before updating the adapter
-        deleteGamesWithEmptyNames(originalGameNames);
-
-        // Notify the listener when deletion is complete
-        OnDeletionCompleteListener listener = (OnDeletionCompleteListener) this;
-        if (listener != null) {
-            listener.onDeletionComplete();
+        for (String name : filteredList) {
+            Log.d(TAG, "filterList: Filtered game name: " + name);
         }
 
         // Update the adapter with the filtered list
         adapter.updateList(filteredList);
     }
 
-    private void deleteGamesWithEmptyNames(List<String> gameNames) {
-        for (String gameName : gameNames) {
-            if (TextUtils.isEmpty(gameName)) {
-                // Delete the game with an empty name
-                game_data gameToDelete = gameManager.getGameByName(gameName);
-
-                // Check if the game exists
-                if (gameToDelete != null) {
-                    // Delete the game by its ID
-                    gameManager.deleteGameById(gameToDelete.get_id());
-                }
-            }
-        }
-    }
-
-    private void deleteAllGames() {
-        // Delete all games from the database
-        gameManager.deleteAllGames();
-
-        // Clear the list in the adapter and update the RecyclerView
-        adapter.clearList();
-    }
 
     private void startDeleteGameActivity(String selectedGameName) {
         game_data selectedGameData = gameManager.getGameByName(selectedGameName);

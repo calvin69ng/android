@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import com.example.tutorial3android.game_data;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,6 +40,27 @@ public class GameManager {
 
     public void deleteAllGames() {
         database.delete(TABLE_NAME_GAMES, null, null);
+    }
+
+    public long updateGame(game_data gameData) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COL_NAME, gameData.getName());
+        contentValues.put(COL_PRICE, gameData.getPrice());
+        contentValues.put(COL_DESCRIPTION, gameData.getDescription());
+
+        // Assuming getGenres() returns a list of genres
+        List<String> genres = gameData.getGenres();
+        String genreString = "";
+        if (genres != null && !genres.isEmpty()) {
+            genreString = TextUtils.join(",", genres);
+        }
+        contentValues.put(COL_GENRE, genreString);
+
+        String whereClause = COL_ID + "=?";
+        String[] whereArgs = {String.valueOf(gameData.getId())};
+
+        // Update the game information in the database
+        return database.update(TABLE_NAME_GAMES, contentValues, whereClause, whereArgs);
     }
 
     public long insertGame(game_data gameData) {
