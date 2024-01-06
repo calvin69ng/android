@@ -58,13 +58,13 @@ public class dbmanager {
         database.delete(dbhelper.TABLE_NAME, dbhelper._ID + "=" + _id, null);
     }
 
-    public user_data getUserById(int userId) {
+    public UserData getUserById(int userId) {
         String[] columns = new String[] { dbhelper._ID, dbhelper.Gmail, dbhelper.Username, dbhelper.Password };
 
         // 查询语句中添加 WHERE 子句，用于指定条件（即用户的 ID）
         Cursor cursor = database.query(dbhelper.TABLE_NAME, columns, dbhelper._ID + " = " + userId, null, null, null, null);
 
-        user_data user = null;
+        UserData user = null;
         if (cursor != null) {
             // 移动到第一行，确保 Cursor 不为空
             if (cursor.moveToFirst()) {
@@ -73,7 +73,7 @@ public class dbmanager {
                 String username = cursor.getString(cursor.getColumnIndex(dbhelper.Username));
                 String password = cursor.getString(cursor.getColumnIndex(dbhelper.Password));
 
-                user = new user_data(_id, gmail, username, password);
+                user = new UserData(_id, gmail, username, password);
             }
 
             // 关闭 Cursor

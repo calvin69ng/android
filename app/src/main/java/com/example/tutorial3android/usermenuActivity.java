@@ -33,6 +33,15 @@ public class usermenuActivity extends AppCompatActivity {
             }
         });
 
+        Button logout = findViewById(R.id.logout);
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(usermenuActivity.this, loginActivity.class);
+                startActivity(intent);
+            }
+        });
+
         btn_addgame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

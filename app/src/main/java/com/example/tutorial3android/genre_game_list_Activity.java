@@ -24,12 +24,12 @@ public class genre_game_list_Activity extends AppCompatActivity {
         setContentView(R.layout.activity_genre_game_list);
 
         TextView genreNameTextView = findViewById(R.id.textView16);
-        recyclerView = findViewById(R.id.genregame);
+        recyclerView = findViewById(R.id.notification1);
 
         // Receive the selected genre data from the intent
         Intent intent = getIntent();
         if (intent.hasExtra("selectedGenre")) {
-            GenreData selectedGenre = (GenreData) intent.getSerializableExtra("selectedGenre");
+            GenreData selectedGenre = (GenreData) intent.getParcelableExtra("selectedGenre");
 
             // Log the size and contents of the received genre list
             if (selectedGenre != null && selectedGenre.getGenres() != null) {

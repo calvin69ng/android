@@ -50,6 +50,9 @@ public class SearchActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 GenreData selectedGenre = genreList.get(position);
 
+                // Log the selected genre details
+                Log.d("SearchActivity", "Selected Genre: " + selectedGenre);
+
                 // Start genre_game_list_Activity and pass the selected genre data
                 Intent intent = new Intent(SearchActivity.this, genre_game_list_Activity.class);
                 intent.putExtra("selectedGenre", (Parcelable) selectedGenre);

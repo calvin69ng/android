@@ -115,7 +115,7 @@ public class searchgameActivity extends AppCompatActivity {
             Log.e(TAG, "startbuygameActivity: Selected Game Data is null");
         }
 
-        Intent intent = new Intent(searchgameActivity.this, buygame.class);
+        Intent intent = new Intent(searchgameActivity.this, buygameActivity.class);
         intent.putExtra("selectedGameData", (Parcelable) selectedGameData);
         startActivity(intent);
     }
