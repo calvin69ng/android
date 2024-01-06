@@ -69,6 +69,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Button back = findViewById(R.id.more);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+                startActivity(intent);
+            }
+        });
+
         Button payment_tng = findViewById(R.id.payment_tng);
         payment_tng.setOnClickListener(new View.OnClickListener() {
             @Override
