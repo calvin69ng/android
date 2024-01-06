@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class game_editlist_Activity extends AppCompatActivity {
+public class searchgameActivity extends AppCompatActivity {
 
     private static final String TAG = "GameEditListActivity";
 
@@ -47,7 +47,7 @@ public class game_editlist_Activity extends AppCompatActivity {
             @Override
             public void onItemClick(int position) {
                 String selectedGameName = originalGameNames.get(position);
-                startDeleteGameActivity(selectedGameName);
+                startbuygameActivity(selectedGameName);
             }
         });
 
@@ -69,18 +69,6 @@ public class game_editlist_Activity extends AppCompatActivity {
             }
         });
 
-        // Button for clearing all data (without affecting RecyclerView)
-        Button clearAllDataButton = findViewById(R.id.clearAllDataButton);
-        clearAllDataButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Delete all games from the database
-                gameManager.deleteAllGames();
-
-                // Clear the list in the adapter without updating the RecyclerView
-                adapter.clearList();
-            }
-        });
 
         // Button for navigating back
         Button backButton = findViewById(R.id.button15);
@@ -88,7 +76,7 @@ public class game_editlist_Activity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: Back button clicked");
-                Intent intent = new Intent(game_editlist_Activity.this, adminpage.class);
+                Intent intent = new Intent(searchgameActivity.this, SearchActivity.class);
                 startActivity(intent);
             }
         });
@@ -116,10 +104,18 @@ public class game_editlist_Activity extends AppCompatActivity {
     }
 
 
-    private void startDeleteGameActivity(String selectedGameName) {
+    private void startbuygameActivity(String selectedGameName) {
         game_data selectedGameData = gameManager.getGameByName(selectedGameName);
 
-        Intent intent = new Intent(game_editlist_Activity.this, DeletegameActivity.class);
+        if (selectedGameData != null) {
+            Log.d(TAG, "startbuygameActivity: Selected Game Data - Name: " + selectedGameData.getName()
+                    + ", Price: " + selectedGameData.getPrice()
+                    + ", Description: " + selectedGameData.getDescription());
+        } else {
+            Log.e(TAG, "startbuygameActivity: Selected Game Data is null");
+        }
+
+        Intent intent = new Intent(searchgameActivity.this, buygame.class);
         intent.putExtra("selectedGameData", (Parcelable) selectedGameData);
         startActivity(intent);
     }

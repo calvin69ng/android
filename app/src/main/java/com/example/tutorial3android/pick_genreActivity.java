@@ -69,7 +69,7 @@ public class pick_genreActivity extends AppCompatActivity {
             }
         }
 
-        adapter = new GenreDataAdapter(this, genreDataList, selectedGenres);
+        adapter = new GenreDataAdapter(this, genreDataList, selectedGenres, new ArrayList<>());
         genreListView.setAdapter(adapter);
     }
 

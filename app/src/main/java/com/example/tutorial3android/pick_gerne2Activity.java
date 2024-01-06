@@ -25,10 +25,13 @@ public class pick_gerne2Activity extends AppCompatActivity {
     private GenreManager genreManager;
     private List<GenreData> genreDataList;
     private GenreDataAdapter adapter;
-    private Set<GenreData> selectedGenres = new HashSet<>(); // to keep track of selected genres
+    private Set<GenreData> selectedGenres = new HashSet<>();
     private String gameName;
     private double price;
     private String description;
+    private long selectedGameId;
+    private List<GenreData> preSelectedGenres = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +49,7 @@ public class pick_gerne2Activity extends AppCompatActivity {
         gameName = intent.getStringExtra("gameName");
         price = intent.getDoubleExtra("price", 0.0);
         description = intent.getStringExtra("description");
+        selectedGameId = intent.getLongExtra("gameId", -1);
 
         initializeViews();
         setupListeners();
@@ -71,7 +75,8 @@ public class pick_gerne2Activity extends AppCompatActivity {
             }
         }
 
-        adapter = new GenreDataAdapter(this, genreDataList, selectedGenres);
+        // Fetch pre-selected genres from the database based on the selected game
+        adapter = new GenreDataAdapter(this, genreDataList, selectedGenres, preSelectedGenres);
         genreListView.setAdapter(adapter);
     }
 
@@ -115,12 +120,13 @@ public class pick_gerne2Activity extends AppCompatActivity {
             selectedGenres.add(selectedGenre);
             Log.d(TAG, "Selected position: " + position);
         }
+
+        // Update the adapter to reflect the changes in selected genres
         adapter.updateData(genreDataList, selectedGenres);
     }
 
     private void navigateToAdminPage() {
         if (!selectedGenres.isEmpty()) {
-            // Create a game_data object with selected genres
             game_data gameData = new GameHelper(
                     findViewById(R.id.editTextText),
                     findViewById(R.id.editTextText2),
@@ -131,11 +137,9 @@ public class pick_gerne2Activity extends AppCompatActivity {
                             description,
                             convertGenreSetToList(selectedGenres));
 
-            // Save the game information and selected genres to SQLite
             long gameId = new GameManager(pick_gerne2Activity.this).updateGame(gameData);
 
             if (gameId != -1) {
-                // Successfully updated, navigate to adminpage
                 Intent adminIntent = new Intent(pick_gerne2Activity.this, game_editlist_Activity.class);
                 adminIntent.putExtra("gameId", gameId);
                 startActivity(adminIntent);
@@ -150,7 +154,6 @@ public class pick_gerne2Activity extends AppCompatActivity {
     private List<String> convertGenreSetToList(Set<GenreData> genreDataSet) {
         List<String> genreList = new ArrayList<>();
         for (GenreData genre : genreDataSet) {
-            // Use addAll to add all elements from the list to genreList
             genreList.addAll(genre.getGenres());
         }
         return genreList;

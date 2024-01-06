@@ -1,8 +1,8 @@
 package com.example.tutorial3android;
 
-import android.app.GameManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -74,7 +74,7 @@ public class AddGameActivity extends AppCompatActivity {
 
         // Don't insert into the database yet, just navigate to the next activity
         Intent intent = new Intent(AddGameActivity.this, pick_genreActivity.class);
-        intent.putExtra("gameData", gameData); // Pass the gameData as an extra
+        intent.putExtra("gameData", (Parcelable) gameData); // Pass the gameData as an extra
         intent.putExtra("gameName", gameName); // Pass the game name as an extra
         intent.putExtra("price", price); // Pass the game price as an extra
         intent.putExtra("description", description); // Pass the game description as an extra

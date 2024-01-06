@@ -18,12 +18,14 @@ public class GenreDataAdapter extends ArrayAdapter<GenreData> {
     private Context context;
     private List<GenreData> genreDataList;
     private Set<GenreData> selectedGenres;
+    private List<GenreData> preSelectedGenres; // Add this variable to store pre-selected genres
 
-    public GenreDataAdapter(Context context, List<GenreData> genreDataList, Set<GenreData> selectedGenres) {
+    public GenreDataAdapter(Context context, List<GenreData> genreDataList, Set<GenreData> selectedGenres, List<GenreData> preSelectedGenres) {
         super(context, 0, genreDataList);
         this.context = context;
         this.genreDataList = genreDataList;
         this.selectedGenres = selectedGenres;
+        this.preSelectedGenres = preSelectedGenres;
     }
 
     @Override
@@ -38,8 +40,11 @@ public class GenreDataAdapter extends ArrayAdapter<GenreData> {
         TextView genreName = listItem.findViewById(R.id.textViewGameName);
         genreName.setText(currentGenre.getGenreName());
 
-        // Check if the current genre is selected
-        if (selectedGenres.contains(currentGenre)) {
+        // Check if the current genre is pre-selected
+        if (preSelectedGenres != null && preSelectedGenres.contains(currentGenre)) {
+            // Change the background color to indicate pre-selection
+            listItem.setBackgroundColor(ContextCompat.getColor(context, R.color.selected_color));
+        } else if (selectedGenres.contains(currentGenre)) {
             // Change the background color when selected
             listItem.setBackgroundColor(ContextCompat.getColor(context, R.color.selected_color));
         } else {
