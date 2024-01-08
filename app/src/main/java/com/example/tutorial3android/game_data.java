@@ -3,9 +3,10 @@ package com.example.tutorial3android;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class game_data implements Parcelable {
+public class game_data implements Parcelable, Serializable {
     private Integer _id;
     private String name;
     private double price;

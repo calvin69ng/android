@@ -2,9 +2,12 @@ package com.example.tutorial3android;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -51,8 +54,17 @@ public class AddGameActivity extends AppCompatActivity {
     private void insertGameAndNavigate() {
         // Retrieve values from EditText widgets
         String gameName = gameNameEditText.getText().toString();
-        double price = Double.parseDouble(priceEditText.getText().toString());
+        String priceStr = priceEditText.getText().toString();
         String description = descriptionEditText.getText().toString();
+
+        if (TextUtils.isEmpty(gameName) || TextUtils.isEmpty(priceStr) || TextUtils.isEmpty(description)) {
+            // Show an error message or handle the case where any of the fields is empty
+            Toast.makeText(AddGameActivity.this, "Please fill in all the fields", Toast.LENGTH_SHORT).show();
+            return; // Don't proceed if any field is empty
+        }
+
+        // Convert price to double (you can add validation for this as well)
+        double price = Double.parseDouble(priceStr);
 
         // Retrieve selected genres (you already have this logic)
         List<String> selectedGenres = getSelectedGenres();
@@ -62,12 +74,13 @@ public class AddGameActivity extends AppCompatActivity {
 
         // Don't insert into the database yet, just navigate to the next activity
         Intent intent = new Intent(AddGameActivity.this, pick_genreActivity.class);
-        intent.putExtra("gameData", gameData); // Pass the gameData as an extra
+        intent.putExtra("gameData", (Parcelable) gameData); // Pass the gameData as an extra
         intent.putExtra("gameName", gameName); // Pass the game name as an extra
         intent.putExtra("price", price); // Pass the game price as an extra
         intent.putExtra("description", description); // Pass the game description as an extra
         startActivity(intent);
     }
+
 
     private List<String> getSelectedGenres() {
         List<String> selectedGenres = new ArrayList<>();

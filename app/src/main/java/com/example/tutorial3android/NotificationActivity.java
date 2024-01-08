@@ -7,22 +7,21 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class login_success extends AppCompatActivity {
+public class NotificationActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login_success);
+        setContentView(R.layout.activity_notification);
 
 
-        Button login_success_main = findViewById(R.id.login_success_main);
-        login_success_main.setOnClickListener(new View.OnClickListener() {
+        Button back = findViewById(R.id.button6);
+        back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(login_success.this, profileActivity.class);
+                Intent intent = new Intent(NotificationActivity.this, usermenuActivity.class);
                 startActivity(intent);
             }
         });
-
     }
 }

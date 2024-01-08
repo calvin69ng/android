@@ -2,6 +2,8 @@ package com.example.tutorial3android;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,11 +14,17 @@ public class DeletegameActivity extends AppCompatActivity {
 
     private EditText gameNameEditText, gamepriceEditText, gamedescriptionEditText;
     private GameManager gameManager;
+    private Button backButton, deleteButton, editButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_deletegame);
+
+
+        editButton = findViewById(R.id.button16);
+        backButton = findViewById(R.id.button17);
+        deleteButton = findViewById(R.id.button18);
 
         gameNameEditText = findViewById(R.id.gamename);
         gamepriceEditText = findViewById(R.id.price);
@@ -33,7 +41,6 @@ public class DeletegameActivity extends AppCompatActivity {
             gamedescriptionEditText.setText(selectedGameData.getDescription());
         }
 
-        Button deleteButton = findViewById(R.id.button18);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,12 +51,49 @@ public class DeletegameActivity extends AppCompatActivity {
                 boolean success = gameManager.deleteGameByName(gameName);
 
                 if (success) {
+                    // If deletion is successful, go back to game_editlist_Activity
                     Intent intent = new Intent(DeletegameActivity.this, game_editlist_Activity.class);
                     startActivity(intent);
+                    finish(); // Finish the current activity to prevent going back to it from the next activity
                 } else {
                     // Handle deletion failure, e.g., display a toast
                     gameManager.showToast("Failed to delete the game");
                 }
+            }
+        });
+
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Retrieve the game name from the EditText field
+                String gameName = gameNameEditText.getText().toString();
+
+                // Check if gameName is empty or null
+                if (TextUtils.isEmpty(gameName)) {
+                    gameManager.showToast("Please enter a valid game name");
+                    return;
+                }
+
+                // Retrieve the game data from SQLite based on the game name
+                game_data selectedGameData = gameManager.getGameByName(gameName);
+
+                if (selectedGameData != null) {
+                    // If the game data is found, go to pick_gerne2Activity
+                    Intent intent = new Intent(DeletegameActivity.this, pick_gerne2Activity.class);
+                    intent.putExtra("selectedGameData", (Parcelable) selectedGameData);
+                    startActivity(intent);
+                } else {
+                    // Handle the case where the game data is not found, e.g., display a toast
+                    gameManager.showToast("Game not found");
+                }
+            }
+        });
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DeletegameActivity.this, game_editlist_Activity.class);
+                startActivity(intent);
+                finish();
             }
         });
     }

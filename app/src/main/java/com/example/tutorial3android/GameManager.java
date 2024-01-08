@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,8 +26,21 @@ public class GameManager {
 
     public GameManager(Context context) {
         this.context = context;
-        database = context.openOrCreateDatabase("GameDatabase", Context.MODE_PRIVATE, null);
+        openDatabase();
+        createGamesTable();
+    }
 
+    private void openDatabase() {
+        database = context.openOrCreateDatabase("GameDatabase", Context.MODE_PRIVATE, null);
+    }
+
+    private void closeDatabase() {
+        if (database != null && database.isOpen()) {
+            database.close();
+        }
+    }
+
+    private void createGamesTable() {
         // Create the Games table if not exists
         database.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_NAME_GAMES + " (" +
                 COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -36,8 +50,36 @@ public class GameManager {
                 COL_GENRE + " TEXT);");
     }
 
+    public void open() {
+        openDatabase();
+    }
+
+    public void close() {
+        closeDatabase();
+    }
     public void deleteAllGames() {
         database.delete(TABLE_NAME_GAMES, null, null);
+    }
+
+    public long updateGame(game_data gameData) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COL_NAME, gameData.getName());
+        contentValues.put(COL_PRICE, gameData.getPrice());
+        contentValues.put(COL_DESCRIPTION, gameData.getDescription());
+
+        // Assuming getGenres() returns a list of genres
+        List<String> genres = gameData.getGenres();
+        String genreString = "";
+        if (genres != null && !genres.isEmpty()) {
+            genreString = TextUtils.join(",", genres);
+        }
+        contentValues.put(COL_GENRE, genreString);
+
+        String whereClause = COL_ID + "=?";
+        String[] whereArgs = {String.valueOf(gameData.get_id())};
+
+        // Update the game information in the database
+        return database.update(TABLE_NAME_GAMES, contentValues, whereClause, whereArgs);
     }
 
     public long insertGame(game_data gameData) {
@@ -55,6 +97,22 @@ public class GameManager {
         contentValues.put(COL_GENRE, genreString);
 
         return database.insert(TABLE_NAME_GAMES, null, contentValues);
+    }
+
+    public List<String> getGameNamesByGenre(int genreId) {
+        List<String> gameNames = new ArrayList<>();
+
+        Cursor cursor = database.query(TABLE_NAME_GAMES, new String[]{COL_NAME}, COL_GENRE + " LIKE ?", new String[]{"%" + genreId + "%"}, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                String name = cursor.getString(cursor.getColumnIndex(COL_NAME));
+                gameNames.add(name);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return gameNames;
     }
 
     public List<game_data> getAllGames() {

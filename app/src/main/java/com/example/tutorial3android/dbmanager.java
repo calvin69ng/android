@@ -32,12 +32,12 @@ public class dbmanager {
         ContentValues contentValue = new ContentValues();
         contentValue.put(dbhelper.Gmail, gmail);
         contentValue.put(dbhelper.Username, username);
-        contentValue.put(dbhelper.Password,password);
+        contentValue.put(dbhelper.Password, password);
         database.insert(dbhelper.TABLE_NAME, null, contentValue);
     }
 
     public Cursor fetch() {
-        String[] columns = new String[] { dbhelper._ID, dbhelper.Gmail, dbhelper.Username ,dbhelper.Password};
+        String[] columns = new String[]{dbhelper._ID, dbhelper.Gmail, dbhelper.Username, dbhelper.Password};
         Cursor cursor = database.query(dbhelper.TABLE_NAME, columns, null, null, null, null, null);
         if (cursor != null) {
             cursor.moveToFirst();
@@ -45,11 +45,11 @@ public class dbmanager {
         return cursor;
     }
 
-    public int update(long _id, String Gmail, String username,String password) {
+    public int update(long _id, String Gmail, String username, String password) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(dbhelper.Gmail, Gmail);
         contentValues.put(dbhelper.Username, username);
-        contentValues.put(dbhelper.Password,password);
+        contentValues.put(dbhelper.Password, password);
         int i = database.update(dbhelper.TABLE_NAME, contentValues, dbhelper._ID + " = " + _id, null);
         return i;
     }
@@ -58,30 +58,71 @@ public class dbmanager {
         database.delete(dbhelper.TABLE_NAME, dbhelper._ID + "=" + _id, null);
     }
 
-    public user_data getUserById(int userId) {
-        String[] columns = new String[] { dbhelper._ID, dbhelper.Gmail, dbhelper.Username, dbhelper.Password };
+    public UserData getUserById(int userId) {
+        String[] columns = new String[]{dbhelper._ID, dbhelper.Gmail, dbhelper.Username, dbhelper.Password};
 
-        // 查询语句中添加 WHERE 子句，用于指定条件（即用户的 ID）
         Cursor cursor = database.query(dbhelper.TABLE_NAME, columns, dbhelper._ID + " = " + userId, null, null, null, null);
 
-        user_data user = null;
+        UserData user = null;
         if (cursor != null) {
-            // 移动到第一行，确保 Cursor 不为空
             if (cursor.moveToFirst()) {
                 int _id = cursor.getInt(cursor.getColumnIndex(dbhelper._ID));
                 String gmail = cursor.getString(cursor.getColumnIndex(dbhelper.Gmail));
                 String username = cursor.getString(cursor.getColumnIndex(dbhelper.Username));
                 String password = cursor.getString(cursor.getColumnIndex(dbhelper.Password));
 
-                user = new user_data(_id, gmail, username, password);
+                user = new UserData(_id, gmail, username, password);
             }
 
-            // 关闭 Cursor
             cursor.close();
         }
 
         return user;
     }
 
+    public UserData getUserByUsername(String username) {
+        String[] columns = new String[]{dbhelper._ID, dbhelper.Gmail, dbhelper.Username, dbhelper.Password};
 
+        Cursor cursor = database.query(
+                dbhelper.TABLE_NAME,
+                columns,
+                dbhelper.Username + " = ?",
+                new String[]{username},
+                null,
+                null,
+                null
+        );
+
+        UserData user = null;
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                int _id = cursor.getInt(cursor.getColumnIndex(dbhelper._ID));
+                String gmail = cursor.getString(cursor.getColumnIndex(dbhelper.Gmail));
+                String fetchedUsername = cursor.getString(cursor.getColumnIndex(dbhelper.Username));
+                String password = cursor.getString(cursor.getColumnIndex(dbhelper.Password));
+
+                if (fetchedUsername.equals(username)) {
+                    user = new UserData(_id, gmail, fetchedUsername, password);
+                }
+            }
+
+            cursor.close();
+        }
+
+        return user;
+    }
+
+    public void updateUserData(UserData userData) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(dbhelper.Gmail, userData.getGmail());
+        contentValues.put(dbhelper.Username, userData.getUsername());
+        contentValues.put(dbhelper.Password, userData.getPassword());
+
+        database.update(
+                dbhelper.TABLE_NAME,
+                contentValues,
+                dbhelper.Username + " = ?",
+                new String[]{userData.getUsername()}
+        );
+    }
 }

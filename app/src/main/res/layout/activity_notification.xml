@@ -4,15 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".gamelist">
+    tools:context=".NotificationActivity">
 
     <TextView
-        android:id="@+id/textView62"
-        android:layout_width="wrap_content"
+        android:id="@+id/textView17"
+        android:layout_width="200dp"
         android:layout_height="50dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
         android:autoSizeTextType="uniform"
+        android:text="Notification"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -27,8 +28,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <ListView
-        android:layout_width="409dp"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/notification1"
+        android:layout_width="400dp"
         android:layout_height="500dp"
         android:layout_marginStart="1dp"
         android:layout_marginTop="100dp"
