@@ -13,6 +13,12 @@
         android:theme="@style/Theme.Tutorial3Android"
         tools:targetApi="31">
         <activity
+            android:name=".playgamelistActivity"
+            android:exported="false" />
+        <activity
+            android:name=".profileActivity"
+            android:exported="false" />
+        <activity
             android:name=".NotificationActivity"
             android:exported="false" />
         <activity
@@ -59,9 +65,6 @@
             android:exported="false" />
         <activity
             android:name=".communityActivity"
-            android:exported="false" />
-        <activity
-            android:name=".profileActivity"
             android:exported="false" />
         <activity
             android:name=".recieptActivity"

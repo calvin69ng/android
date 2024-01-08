@@ -41,6 +41,18 @@ public class GameNamePriceAdapter extends RecyclerView.Adapter<GameNamePriceAdap
         holder.gameNameTextView.setText(gameData.getName());
         holder.gamePriceTextView.setText(String.valueOf(gameData.getPrice()));
 
+        // Set click listener for the delete button
+        holder.deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Handle delete button click here
+                if (onItemClickListener != null) {
+                    onItemClickListener.onItemClick(position);
+                }
+            }
+        });
+
+        // Set click listener for the entire item view (if needed)
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

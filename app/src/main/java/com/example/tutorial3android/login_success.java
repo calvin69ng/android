@@ -13,16 +13,13 @@ public class login_success extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_success);
-        Intent intent = getIntent();
-        boolean isAdmin = intent.getBooleanExtra("isAdmin", false); // is admin, then true
 
 
         Button login_success_main = findViewById(R.id.login_success_main);
         login_success_main.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(login_success.this, usermenuActivity.class);
-                intent.putExtra("isAdmin", isAdmin);
+                Intent intent = new Intent(login_success.this, profileActivity.class);
                 startActivity(intent);
             }
         });

@@ -1,6 +1,7 @@
 package com.example.tutorial3android;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -27,8 +28,6 @@ public class loginActivity extends AppCompatActivity {
         et_user = findViewById(R.id.user1);
         et_pass = findViewById(R.id.pass1);
 
-
-
         btn_reset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -37,7 +36,6 @@ public class loginActivity extends AppCompatActivity {
                 et_pass.setText("");
             }
         });
-
 
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,12 +46,11 @@ public class loginActivity extends AppCompatActivity {
 
                 // Check if the entered credentials match a user in the SQLite database
                 if (isUserValid(enteredUsername, enteredPassword)) {
-                    // Credentials are valid, navigate to the next activity
-                    Intent intent = new Intent(loginActivity.this, login_success.class);
+                    // Credentials are valid, store the user information
+                    storeUserInfo(enteredUsername);
 
-                    if (enteredUsername.equals("admin") && enteredPassword.equals("admin")) {
-                        intent.putExtra("isAdmin", true);
-                    }
+                    // Navigate to the next activity
+                    Intent intent = new Intent(loginActivity.this, login_success.class);
 
                     startActivity(intent);
                 } else {
@@ -63,7 +60,6 @@ public class loginActivity extends AppCompatActivity {
             }
         });
 
-
         btn_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,6 +67,14 @@ public class loginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    // Method to store the user information in SharedPreferences
+    private void storeUserInfo(String username) {
+        SharedPreferences preferences = getSharedPreferences("user_info", MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("username", username);
+        editor.apply();
     }
 
     // Method to check if the entered credentials match a user in the SQLite database

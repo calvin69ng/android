@@ -60,4 +60,37 @@ public class dbhelper extends SQLiteOpenHelper {
         db.close();
 
         return isValid;
-    }}
+    }
+    public UserData getUserByUsername(String username) {
+        String[] columns = new String[]{_ID, Gmail, Username, Password};
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(
+                TABLE_NAME,
+                columns,
+                Username + " = ?",
+                new String[]{username},
+                null,
+                null,
+                null
+        );
+
+        UserData user = null;
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                int _id = cursor.getInt(cursor.getColumnIndex(_ID));
+                String gmail = cursor.getString(cursor.getColumnIndex(Gmail));
+                String fetchedUsername = cursor.getString(cursor.getColumnIndex(Username));
+                String password = cursor.getString(cursor.getColumnIndex(Password));
+
+                if (fetchedUsername.equals(username)) {
+                    user = new UserData(_id, gmail, fetchedUsername, password);
+                }
+            }
+
+            cursor.close();
+        }
+
+        return user;
+    }
+}
