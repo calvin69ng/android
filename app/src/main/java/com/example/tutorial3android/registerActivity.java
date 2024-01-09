@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class registerActivity extends AppCompatActivity {
     private Button btn_login, btn_reset, btn_register;
     private EditText et_gmail, et_user, et_pass, et_again;
-    private dbmanager userDBManager;
+    private user_dbmanager userDBManager;
 
 
     @Override
@@ -29,7 +29,7 @@ public class registerActivity extends AppCompatActivity {
         et_user = findViewById(R.id.user);
         et_pass = findViewById(R.id.pass);
         et_again = findViewById(R.id.again);
-        userDBManager = new dbmanager(this);
+        userDBManager = new user_dbmanager(this);
 
 
 
@@ -73,7 +73,6 @@ public class registerActivity extends AppCompatActivity {
     }
 
     private void userRegisterProcess(String gmail, String username, String password){
-        userDBManager.open();
         try {
             userDBManager.insert(gmail,username,password);
         }catch (Exception e){

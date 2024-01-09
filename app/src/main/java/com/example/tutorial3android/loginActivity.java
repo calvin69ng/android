@@ -28,14 +28,14 @@ public class loginActivity extends AppCompatActivity {
         et_user = findViewById(R.id.user1);
         et_pass = findViewById(R.id.pass1);
 
-        btn_reset.setOnClickListener(new View.OnClickListener() {
+        /*btn_reset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(loginActivity.this, "Reset", Toast.LENGTH_LONG).show();
                 et_user.setText("");
                 et_pass.setText("");
             }
-        });
+        });*/
 
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -15,7 +15,7 @@ import java.util.List;
 
 public class accountActivity extends AppCompatActivity {
 
-    private dbmanager dbManager;
+    private user_dbmanager dbManager;
     private ListView listView;
     private Button backButton;
     private ArrayAdapter<String> adapter;
@@ -28,8 +28,7 @@ public class accountActivity extends AppCompatActivity {
         listView = findViewById(R.id.listview4);
         backButton = findViewById(R.id.button9);
 
-        dbManager = new dbmanager(this);
-        dbManager.open();
+        dbManager = new user_dbmanager(this);
 
         // Fetch usernames from the database
         List<String> usernames = getUsernames();
