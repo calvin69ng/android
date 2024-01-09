@@ -73,9 +73,6 @@
             android:name=".tngActivity"
             android:exported="false" />
         <activity
-            android:name=".login_success"
-            android:exported="true" />
-        <activity
             android:name=".payment_successActivity"
             android:exported="true" />
         <activity

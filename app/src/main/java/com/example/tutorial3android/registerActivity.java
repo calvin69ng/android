@@ -2,87 +2,121 @@ package com.example.tutorial3android;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 @SuppressWarnings("all")
 public class registerActivity extends AppCompatActivity {
-    private Button btn_login, btn_reset, btn_register;
-    private EditText et_gmail, et_user, et_pass, et_again;
+
+    private EditText et_email, et_username, et_password, et_comfirm_password;
+    private Button register;
     private user_dbmanager userDBManager;
+    private admin_dbmanager adminDBManager;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        // find views
-        btn_login = findViewById(R.id.login);
-        btn_reset = findViewById(R.id.reset);
-        btn_register = findViewById(R.id.register);
-        et_gmail = findViewById(R.id.gmail);
-        et_user = findViewById(R.id.user);
-        et_pass = findViewById(R.id.pass);
-        et_again = findViewById(R.id.again);
-        userDBManager = new user_dbmanager(this);
+        TextView textView = findViewById(R.id.login_turn_page_text);
 
+        String text = "Login";
 
+        SpannableString ss = new SpannableString(text);
 
-        // listener
-        btn_reset.setOnClickListener(new View.OnClickListener() {
+        ClickableSpan clickableSpan = new ClickableSpan() {
             @Override
-            public void onClick(View v) {
-                Toast.makeText(registerActivity.this, "Reset", Toast.LENGTH_LONG).show();
-                et_gmail.setText("");
-                et_user.setText("");
-                et_pass.setText("");
-                et_again.setText("");
-            }
-        });
-
-
-        btn_login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull View widget) {
                 Intent intent = new Intent(registerActivity.this, loginActivity.class);
                 startActivity(intent);
             }
-        });
+        };
 
+        ss.setSpan(clickableSpan, 0, 5, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        btn_register.setOnClickListener(new View.OnClickListener() {
+        textView.setText(ss);
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
+
+        et_email = (EditText) findViewById(R.id.email_register_edit_text);
+        et_username = (EditText) findViewById(R.id.user_register_edit_text);
+        et_password = (EditText) findViewById(R.id.password_register_edit_text);
+        et_comfirm_password = (EditText) findViewById(R.id.comfirm_password_register_edit_text);
+        register = (Button) findViewById(R.id.register_button);
+        userDBManager = new user_dbmanager(this);
+        adminDBManager = new admin_dbmanager(this);
+
+        register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String gmail = et_gmail.getText().toString();
-                String username = et_user.getText().toString();
-                String password = et_pass.getText().toString();
-                String confirmPassword = et_again.getText().toString();
+                String email = et_email.getText().toString();
+                String username = et_username.getText().toString();
+                String password = et_password.getText().toString();
+                String comfirmPassword = et_comfirm_password.getText().toString();
 
-                if (!password.equals(confirmPassword)) {
-                    Toast.makeText(registerActivity.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
-                } else {
-                    userRegisterProcess(gmail,username,password);
-                }
+
+                    userRegisterProcess(email,username,password, comfirmPassword);
+
             }
         });
+
+
     }
 
-    private void userRegisterProcess(String gmail, String username, String password){
-        try {
-            userDBManager.insert(gmail,username,password);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }finally {
-            userDBManager.close();
+    private void userRegisterProcess(String gmail, String username, String password, String comfirmPassword) {
+        if (TextUtils.isEmpty(gmail) || TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || TextUtils.isEmpty(comfirmPassword)) {
+            Toast.makeText(registerActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+        } else if (!gmail.endsWith("@gmail.com")) {
+            Toast.makeText(registerActivity.this, "Invalid gmail format. Please use a valid @gmail.com address", Toast.LENGTH_SHORT).show();
+        } else if (!password.equals(comfirmPassword)) {
+            Toast.makeText(registerActivity.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
+        } else if (username.contains("@admin")) {
+            if (adminDBManager.isAdminExists(username)) {
+                Toast.makeText(registerActivity.this, "Admin with this username already exists", Toast.LENGTH_SHORT).show();
+            } else if (adminDBManager.isGmailAdminExists(gmail)) {
+                Toast.makeText(registerActivity.this, "Admin with this Gmail address already exists", Toast.LENGTH_SHORT).show();
+            } else {
+                try {
+                    adminDBManager.insert(gmail, username, password);
+                    Toast.makeText(registerActivity.this, "Admin registration successful", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                } finally {
+                    adminDBManager.close();
+                }
+                Intent intent = new Intent(this, loginActivity.class);
+                startActivity(intent);
+            }
+        } else {
+            if (userDBManager.isUserExists(username)) {
+                Toast.makeText(registerActivity.this, "User with this username already exists", Toast.LENGTH_SHORT).show();
+            } else if (userDBManager.isGmailUserExists(gmail)) {
+                Toast.makeText(registerActivity.this, "User with this Gmail address already exists", Toast.LENGTH_SHORT).show();
+            } else {
+                try {
+                    userDBManager.insert(gmail, username, password);
+                    Toast.makeText(registerActivity.this, "User registration successful", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                } finally {
+                    userDBManager.close();
+                }
+                Intent intent = new Intent(this, loginActivity.class);
+                startActivity(intent);
+            }
         }
-        Toast.makeText(registerActivity.this, "Registration successful", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(this, loginActivity.class);
-        startActivity(intent);
     }
-
-    }
+}

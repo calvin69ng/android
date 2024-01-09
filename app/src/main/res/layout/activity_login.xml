@@ -6,88 +6,67 @@
     android:layout_height="match_parent"
     tools:context=".loginActivity">
 
-    <Button
-        android:id="@+id/register"
-        android:layout_width="110dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="150dp"
-        android:layout_marginEnd="80dp"
-        android:onClick="Register"
-        android:text="Register"
+    <TextView
+        android:id="@+id/register_turn_page_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="376dp"
+        android:minWidth="100dp"
+        android:minHeight="48dp"
+        android:text="@string/register"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/login_login_success"
-        android:layout_width="110dp"
-        android:layout_height="60dp"
-        android:layout_marginEnd="80dp"
-        android:layout_marginBottom="150dp"
-        android:text="Next"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <Button
-        android:id="@+id/login_login_successful"
-        android:layout_width="110dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="80dp"
-        android:layout_marginTop="150dp"
-        android:text="Login"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/reset2"
-        android:layout_width="110dp"
+        android:id="@+id/login_button"
+        android:layout_width="200dp"
         android:layout_height="60dp"
-        android:layout_marginStart="80dp"
         android:layout_marginBottom="150dp"
-        android:text="Reset"
+        android:text="@string/log_in"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <TextView
-        android:id="@+id/textView45"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="410dp"
-        android:text="Password"
-        android:textSize="25dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/user1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="300dp"
-        android:layout_marginEnd="30dp"
+        android:id="@+id/username_login_edit_text"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="200dp"
+        android:background="@drawable/edit_text_tab_login_register"
+        android:drawableStart="@drawable/username_icon"
         android:ems="10"
+        android:hint="@string/username"
         android:inputType="text"
+        android:paddingStart="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/password_login_edit_text"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/textView44"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="310dp"
-        android:text="Username"
-        android:textSize="25dp"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:importantForAutofill="no"
+        tools:ignore="RtlSymmetry" />
 
     <EditText
-        android:id="@+id/pass1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="400dp"
-        android:layout_marginEnd="30dp"
+        android:id="@+id/password_login_edit_text"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="300dp"
+        android:background="@drawable/edit_text_tab_login_register"
+        android:drawableStart="@drawable/password_icon"
         android:ems="10"
+        android:hint="@string/password"
         android:inputType="textPassword"
+        android:paddingStart="10dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:importantForAutofill="no"
+        tools:ignore="RtlSymmetry" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

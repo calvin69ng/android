@@ -74,7 +74,7 @@ public class debit_cardActivity extends AppCompatActivity {
         // (e.g., database, shared preferences, etc.)
 
         user_dbmanager dbManager = new user_dbmanager(debit_cardActivity.this);  // Using the activity's context
-        dbManager.open();
+
 
         // Assuming you have a method to get UserData by username from your database manager
         UserData userData = dbManager.getUserByUsername(username);
@@ -89,7 +89,6 @@ public class debit_cardActivity extends AppCompatActivity {
         // (e.g., database, shared preferences, etc.)
 
         user_dbmanager dbManager = new user_dbmanager(debit_cardActivity.this);  // Using the activity's context
-        dbManager.open();
 
         // Assuming you have a method to update UserData in your database manager
         dbManager.updateUserData(userData);

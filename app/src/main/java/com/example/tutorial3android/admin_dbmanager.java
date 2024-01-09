@@ -8,10 +8,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-public class user_dbmanager extends SQLiteOpenHelper {
+public class admin_dbmanager extends SQLiteOpenHelper {
 
     // Table Name
-    public static final String TABLE_NAME = "UserList";
+    public static final String TABLE_NAME = "AdminList";
 
     // Table columns
     public static final String _ID = "_id";
@@ -22,7 +22,7 @@ public class user_dbmanager extends SQLiteOpenHelper {
 
 
     // Database Information
-    static final String DB_NAME = "User.DB";
+    static final String DB_NAME = "Admin.DB";
 
     // database version
     static final int DB_VERSION = 1;
@@ -34,7 +34,7 @@ public class user_dbmanager extends SQLiteOpenHelper {
             Username + " TEXT, " +
             Password + " TEXT);";
 
-    public user_dbmanager(Context context) {
+    public admin_dbmanager(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
 
@@ -99,7 +99,7 @@ public class user_dbmanager extends SQLiteOpenHelper {
         database.close();
     }
 
-    public UserData getUserById(int userId) {
+    public UserData getAdminById(int userId) {
         SQLiteDatabase database = this.getReadableDatabase();
         String[] columns = new String[]{_ID, Gmail, Username, Password};
 
@@ -122,7 +122,7 @@ public class user_dbmanager extends SQLiteOpenHelper {
         return user;
     }
 
-    public UserData getUserByUsername(String username) {
+    public UserData getAdminByUsername(String username) {
         SQLiteDatabase database = this.getReadableDatabase();
         String[] columns = new String[]{_ID, Gmail, Username, Password};
 
@@ -155,7 +155,7 @@ public class user_dbmanager extends SQLiteOpenHelper {
         return user;
     }
 
-    public void updateUserData(UserData userData) {
+    public void updateAdminData(UserData userData) {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(Gmail, userData.getGmail());
@@ -170,7 +170,7 @@ public class user_dbmanager extends SQLiteOpenHelper {
         );
     }
 
-    public boolean isUserExists(String username) {
+    public boolean isAdminExists(String username) {
         SQLiteDatabase database = this.getReadableDatabase();
         String[] columns = new String[]{_ID, Username};
 
@@ -192,7 +192,7 @@ public class user_dbmanager extends SQLiteOpenHelper {
         return exists;
     }
 
-    public boolean isGmailUserExists(String username) {
+    public boolean isGmailAdminExists(String username) {
         SQLiteDatabase database = this.getReadableDatabase();
         String[] columns = new String[]{_ID, Gmail};
 
@@ -213,5 +213,4 @@ public class user_dbmanager extends SQLiteOpenHelper {
         database.close();
         return exists;
     }
-
 }

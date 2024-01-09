@@ -1,89 +1,106 @@
 package com.example.tutorial3android;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class loginActivity extends AppCompatActivity {
 
-    private Button btn_next, btn_reset, btn_register;
-
-    private EditText et_user, et_pass;
+    private EditText et_username, et_password;
+    private user_dbmanager userDBManager;
+    private admin_dbmanager adminDBManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // find views
-        btn_next = findViewById(R.id.login_login_success);
-        btn_reset = findViewById(R.id.reset2);
-        btn_register = findViewById(R.id.register);
-        et_user = findViewById(R.id.user1);
-        et_pass = findViewById(R.id.pass1);
+        TextView textView = findViewById(R.id.register_turn_page_text);
+        Button btn_login = findViewById(R.id.login_button);
+        et_username = findViewById(R.id.username_login_edit_text);
+        et_password = findViewById(R.id.password_login_edit_text);
+        userDBManager = new user_dbmanager(this);
+        adminDBManager = new admin_dbmanager(this);
 
-        /*btn_reset.setOnClickListener(new View.OnClickListener() {
+        String text = "Register";
+
+        SpannableString ss = new SpannableString(text);
+
+        ClickableSpan clickableSpan = new ClickableSpan() {
             @Override
-            public void onClick(View v) {
-                Toast.makeText(loginActivity.this, "Reset", Toast.LENGTH_LONG).show();
-                et_user.setText("");
-                et_pass.setText("");
+            public void onClick(@NonNull View widget) {
+                Intent intent = new Intent(loginActivity.this, registerActivity.class);
+                startActivity(intent);
             }
-        });*/
+        };
 
-        btn_next.setOnClickListener(new View.OnClickListener() {
+        ss.setSpan(clickableSpan, 0, 8, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        textView.setText(ss);
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
+
+        btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Get the entered username and password
-                String enteredUsername = et_user.getText().toString().trim();
-                String enteredPassword = et_pass.getText().toString().trim();
+                String username = et_username.getText().toString();
+                String password = et_password.getText().toString();
 
-                // Check if the entered credentials match a user in the SQLite database
-                if (isUserValid(enteredUsername, enteredPassword)) {
-                    // Credentials are valid, store the user information
-                    storeUserInfo(enteredUsername);
+                if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)){
+                    Toast.makeText(loginActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                }else {
+                    userLoginProcess(username,password);
+                }
+            }
 
-                    // Navigate to the next activity
-                    Intent intent = new Intent(loginActivity.this, login_success.class);
+            private void userLoginProcess(String username, String password) {
+                // Check if the username contains "@admin"
+                if (username.contains("@admin")) {
+                    // This is an admin login
+                    UserData admin = adminDBManager.getAdminByUsername(username);
 
-                    startActivity(intent);
+                    if (admin != null && admin.getPassword().equals(password)) {
+                        // Admin credentials are correct
+                        // You can add the logic to navigate to the admin page here
+                        Toast.makeText(loginActivity.this, "Admin login successful", Toast.LENGTH_SHORT).show();
+                        // Example: Navigate to admin page
+                        Intent adminIntent = new Intent(loginActivity.this, adminpage.class);
+                        startActivity(adminIntent);
+                    } else {
+                        // Admin credentials are incorrect
+                        Toast.makeText(loginActivity.this, "Invalid admin", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    // Credentials are invalid, show a message
-                    Toast.makeText(loginActivity.this, "Invalid username or password", Toast.LENGTH_LONG).show();
+                    // This is a user login
+                    UserData user = userDBManager.getUserByUsername(username);
+
+                    if (user != null && user.getPassword().equals(password)) {
+                        // User credentials are correct
+                        // You can add the logic to navigate to the user page here
+                        Toast.makeText(loginActivity.this, "User login successful", Toast.LENGTH_SHORT).show();
+                        // Example: Navigate to user page
+                        Intent userIntent = new Intent(loginActivity.this, usermenuActivity.class);
+                        startActivity(userIntent);
+                    } else {
+                        // User credentials are incorrect
+                        Toast.makeText(loginActivity.this, "Invalid user", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
 
-        btn_register.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(loginActivity.this, registerActivity.class);
-                startActivity(intent);
-            }
-        });
     }
 
-    // Method to store the user information in SharedPreferences
-    private void storeUserInfo(String username) {
-        SharedPreferences preferences = getSharedPreferences("user_info", MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("username", username);
-        editor.apply();
-    }
 
-    // Method to check if the entered credentials match a user in the SQLite database
-    private boolean isUserValid(String username, String password) {
-        // Implement the logic to check the credentials in your SQLite database
-        // You might want to use a SQLiteOpenHelper or other methods to interact with the database
-        // For simplicity, let's assume you have a method in a DatabaseHelper class like checkUserCredentials
-        // that returns true if the user with the given username and password exists in the database
-        dbhelper dbHelper = new dbhelper(loginActivity.this);
-        return dbHelper.checkUserCredentials(username, password);
-    }
 }
