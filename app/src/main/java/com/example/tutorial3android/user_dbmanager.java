@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.ArrayList;
+
 public class user_dbmanager extends SQLiteOpenHelper {
 
     // Table Name
@@ -113,7 +115,7 @@ public class user_dbmanager extends SQLiteOpenHelper {
                 @SuppressLint("Range") String username = cursor.getString(cursor.getColumnIndex(Username));
                 @SuppressLint("Range") String password = cursor.getString(cursor.getColumnIndex(Password));
 
-                user = new UserData(_id, gmail, username, password);
+                user = new UserData(_id, gmail, username, password, new ArrayList<>());
             }
 
             cursor.close();
@@ -145,7 +147,7 @@ public class user_dbmanager extends SQLiteOpenHelper {
                 @SuppressLint("Range") String password = cursor.getString(cursor.getColumnIndex(Password));
 
                 if (fetchedUsername.equals(username)) {
-                    user = new UserData(_id, gmail, fetchedUsername, password);
+                    user = new UserData(_id, gmail, fetchedUsername, password, new ArrayList<>());
                 }
             }
 
