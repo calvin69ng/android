@@ -4,21 +4,21 @@ import java.util.Date;
 import java.util.List;
 
 public class NotificationData {
-    private Integer id;
+    private long  id;
     private String sender;
     private String message;
     private Date date;
-    private List<String> receivers;
+    private String receiver; // Change the type to String
 
-    public NotificationData(Integer id, String sender, String message, Date date, List<String> receivers) {
+    public NotificationData(long  id, String sender, String message, Date date, String receiver) {
         this.id = id;
         this.sender = sender;
         this.message = message;
         this.date = date;
-        this.receivers = receivers;
+        this.receiver = receiver;
     }
 
-    public Integer getId() {
+    public long  getId() {
         return id;
     }
 
@@ -34,7 +34,7 @@ public class NotificationData {
         return date;
     }
 
-    public List<String> getReceivers() {
-        return receivers;
+    public String getReceiver() { // Fix the method name to getReceiver()
+        return receiver;
     }
 }
