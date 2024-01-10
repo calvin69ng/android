@@ -33,7 +33,7 @@ public class searchgameActivity extends AppCompatActivity {
 
         Log.d(TAG, "onCreate: Activity created");
 
-        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView = findViewById(R.id.playgamelist);
         gameManager = new GameManager(this);
 
         originalGameNames = gameManager.getAllGameNames();

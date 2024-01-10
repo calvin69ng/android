@@ -26,7 +26,25 @@ public class profileActivity extends AppCompatActivity {
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Clear the stored username from SharedPreferences on logout
+                SharedPreferences preferences = getSharedPreferences("user_info", MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.remove("username");
+                editor.apply();
+
+                // Navigate back to the login activity
                 Intent intent = new Intent(profileActivity.this, loginActivity.class);
+                startActivity(intent);
+                // Finish the current activity to prevent going back to it using the back button
+                finish();
+            }
+        });
+
+        Button game = findViewById(R.id.button24);
+        game.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(profileActivity.this, playgamelistActivity.class);
                 startActivity(intent);
             }
         });
