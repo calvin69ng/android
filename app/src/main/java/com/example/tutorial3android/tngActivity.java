@@ -30,19 +30,14 @@ public class tngActivity extends AppCompatActivity {
         TextView totalTextView = findViewById(R.id.total3);
         totalTextView.setText(String.format("%.2f", totalPrice));
 
-        Button tng_payment_success = findViewById(R.id.tng_payment_success);
-        tng_payment_success.setOnClickListener(new View.OnClickListener() {
+        Button tng_payment = findViewById(R.id.tng_payment);
+        tng_payment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Update UserData
                 UserData userData = getUserData(username);
                 if (userData != null) {
-                    // Ensure the games list is initialized to avoid null pointer exceptions
-                    if (userData.getGames() == null) {
-                        userData.setGames(new ArrayList<>());
-                    }
-                    List<game_data> gameDataList = convertToGameData(selectedGameNames);
-                    userData.getGames().addAll(gameDataList);
+                    userData.getGames().addAll(selectedGameNames);
                     updateUserData(userData);
                 }
 
@@ -64,26 +59,14 @@ public class tngActivity extends AppCompatActivity {
             }
         });
 
-        Button tng_payment = findViewById(R.id.tng_payment);
-        tng_payment.setOnClickListener(new View.OnClickListener() {
+        Button tng_payment_success = findViewById(R.id.tng_payment_success);
+        tng_payment_success.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(tngActivity.this, payment_successActivity.class);
                 startActivity(intent);
             }
         });
-    }
-
-    private List<game_data> convertToGameData(List<String> selectedGameNames) {
-        List<game_data> gameDataList = new ArrayList<>();
-
-        for (String gameName : selectedGameNames) {
-            // Assuming you want to create a new game_data object for each game name
-            game_data gameData = new game_data(null, gameName, 0.0, "", null);
-            gameDataList.add(gameData);
-        }
-
-        return gameDataList;
     }
 
     private UserData getUserData(String username) {

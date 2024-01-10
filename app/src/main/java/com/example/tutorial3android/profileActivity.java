@@ -31,15 +31,6 @@ public class profileActivity extends AppCompatActivity {
             }
         });
 
-        Button game = findViewById(R.id.button24);
-        game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(profileActivity.this, playgamelistActivity.class);
-                startActivity(intent);
-            }
-        });
-
         Button user_menu = findViewById(R.id.button26);
         user_menu.setOnClickListener(new View.OnClickListener() {
             @Override

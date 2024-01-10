@@ -46,12 +46,7 @@ public class debit_cardActivity extends AppCompatActivity {
                 // Update UserData
                 UserData userData = getUserData(username);
                 if (userData != null) {
-                    // Ensure the games list is initialized to avoid null pointer exceptions
-                    if (userData.getGames() == null) {
-                        userData.setGames(new ArrayList<>());
-                    }
-                    List<game_data> gameDataList = convertToGameData(selectedGameNames);
-                    userData.getGames().addAll(gameDataList);
+                    userData.getGames().addAll(selectedGameNames);
                     updateUserData(userData);
                 }
 
@@ -72,18 +67,6 @@ public class debit_cardActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-    }
-
-    private List<game_data> convertToGameData(List<String> selectedGameNames) {
-        List<game_data> gameDataList = new ArrayList<>();
-
-        for (String gameName : selectedGameNames) {
-            // Assuming you want to create a new game_data object for each game name
-            game_data gameData = new game_data(null, gameName, 0.0, "", null);
-            gameDataList.add(gameData);
-        }
-
-        return gameDataList;
     }
 
     private UserData getUserData(String username) {
