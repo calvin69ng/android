@@ -1,6 +1,7 @@
 package com.example.tutorial3android;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
@@ -10,6 +11,8 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import com.example.tutorial3android.manager.GenreManager;
+import com.example.tutorial3android.data.Genre;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -26,36 +29,49 @@ public class SearchActivity extends AppCompatActivity {
         GenreManager genreManager = new GenreManager(this);
         genreManager.open();
 
-        // Fetch genres from the database
-        List<GenreData> genreList = genreManager.getAllGenresList();
+        // Fetch genres from the database using Cursor
+        Cursor cursor = genreManager.getAllGenres();
+
+        // Create a list to store Genre objects
+        List<Genre> genreList = new ArrayList<>();
+
+        // Iterate through the cursor and populate the list
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                String genreName = cursor.getString(cursor.getColumnIndexOrThrow(GenreManager.COL_GENRE_NAME));
+                Genre genre = new Genre(genreName);
+                genreList.add(genre);
+            } while (cursor.moveToNext());
+        }
+
+        // Close the cursor
+        if (cursor != null) {
+            cursor.close();
+        }
 
         // Log the data to verify
-        for (GenreData genre : genreList) {
-            Log.d("SearchActivity", "Genre: " + genre.getGenres());
+        for (Genre genre : genreList) {
+            Log.d("SearchActivity", "Genre: " + genre.getGenreName());
         }
 
         // Log the size and contents of the genreList
         Log.d("SearchActivity", "GenreList size: " + genreList.size());
         Log.d("SearchActivity", "GenreList contents: " + genreList);
 
-        // Create a set of selected genre IDs (assuming GenreData has an identifier like genreId)
-        Set<GenreData> selectedGenreIds = new HashSet<>();
         // Create an adapter and connect it to the ListView
-        GenreDataAdapter adapter = new GenreDataAdapter(this, genreList, selectedGenreIds, new ArrayList<>());
+        ClickGenreAdapter adapter = new ClickGenreAdapter(this, genreList);
         ListView listView = findViewById(R.id.listview5); // Replace with your actual ListView id
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                GenreData selectedGenre = genreList.get(position);
-
-                // Log the selected genre details
-                Log.d("SearchActivity", "Selected Genre: " + selectedGenre);
-
-                // Start genre_game_list_Activity and pass the selected genre data
+                String selectedGenreName = genreList.get(position).getGenreName();
+                // Log the selected genre name
+                Log.d("SearchActivity", "Selected Genre: " + selectedGenreName);
+                // Start genre_game_list_Activity and pass the selected genre name
                 Intent intent = new Intent(SearchActivity.this, genre_game_list_Activity.class);
-                intent.putExtra("selectedGenre", (Parcelable) selectedGenre);
+                intent.putExtra("selectedGenreName", selectedGenreName);
                 startActivity(intent);
             }
         });

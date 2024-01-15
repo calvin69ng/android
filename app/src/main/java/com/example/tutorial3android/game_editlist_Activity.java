@@ -14,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.tutorial3android.manager.GameManager;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,19 +71,6 @@ public class game_editlist_Activity extends AppCompatActivity {
             }
         });
 
-        // Button for clearing all data (without affecting RecyclerView)
-        Button clearAllDataButton = findViewById(R.id.clearAllDataButton);
-        clearAllDataButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Delete all games from the database
-                gameManager.deleteAllGames();
-
-                // Clear the list in the adapter without updating the RecyclerView
-                adapter.clearList();
-            }
-        });
-
         // Button for navigating back
         Button backButton = findViewById(R.id.button15);
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -117,10 +106,8 @@ public class game_editlist_Activity extends AppCompatActivity {
 
 
     private void startDeleteGameActivity(String selectedGameName) {
-        game_data selectedGameData = gameManager.getGameByName(selectedGameName);
-
         Intent intent = new Intent(game_editlist_Activity.this, DeletegameActivity.class);
-        intent.putExtra("selectedGameData", (Parcelable) selectedGameData);
+        intent.putExtra("selectedGameName", selectedGameName);
         startActivity(intent);
     }
 }

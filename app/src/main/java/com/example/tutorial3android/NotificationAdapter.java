@@ -8,16 +8,19 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
-import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import com.example.tutorial3android.data.Notification;  // Add this import statement
 
 public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.ViewHolder> {
 
-    private List<NotificationData> notificationDataList;
+    private List<Notification> notificationList;
 
-    public NotificationAdapter(List<NotificationData> notificationDataList) {
-        this.notificationDataList = notificationDataList;
+    public NotificationAdapter(List<Notification> notificationList) {
+        this.notificationList = notificationList;
     }
 
     @NonNull
@@ -29,18 +32,18 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        NotificationData notificationData = notificationDataList.get(position);
+        Notification notification = notificationList.get(position);
 
-        holder.messageTextView.setText(notificationData.getMessage());
+        holder.messageTextView.setText(notification.getMessage());
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-        String formattedDate = dateFormat.format(notificationData.getDate());
-        holder.dateTextView.setText(formattedDate);
+        String formattedDate = dateFormat.format(new Date(Long.parseLong(notification.getTime())));
+        holder.dateTextView.setText(formattedDate); // Set the formatted date
     }
 
     @Override
     public int getItemCount() {
-        return notificationDataList.size();
+        return notificationList.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -50,7 +53,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             messageTextView = itemView.findViewById(R.id.messageTextView);
-            dateTextView = itemView.findViewById(R.id.dateTextView);
+            dateTextView = itemView.findViewById(R.id.dateTextView); // Add dateTextView
         }
     }
 }

@@ -19,6 +19,8 @@ public class adminpage extends AppCompatActivity {
         Button edit_genre = findViewById(R.id.button3);
         Button edit_account = findViewById(R.id.button4);
         Button userpage = findViewById(R.id.button5);
+        Button income = findViewById(R.id.button28);
+
 
 
         edit_game.setOnClickListener(new View.OnClickListener() {
@@ -33,6 +35,14 @@ public class adminpage extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(adminpage.this, usermenuActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        income.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(adminpage.this, IncomeActivity.class);
                 startActivity(intent);
             }
         });

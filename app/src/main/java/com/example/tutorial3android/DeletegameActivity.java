@@ -7,8 +7,12 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.tutorial3android.manager.GameManager;
+import com.example.tutorial3android.data.Game;
 
 public class DeletegameActivity extends AppCompatActivity {
 
@@ -21,7 +25,6 @@ public class DeletegameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_deletegame);
 
-
         editButton = findViewById(R.id.button16);
         backButton = findViewById(R.id.button17);
         deleteButton = findViewById(R.id.button18);
@@ -31,12 +34,13 @@ public class DeletegameActivity extends AppCompatActivity {
         gamedescriptionEditText = findViewById(R.id.description);
         gameManager = new GameManager(this);
 
-        // Retrieve the selected game data from the intent
-        game_data selectedGameData = getIntent().getParcelableExtra("selectedGameData");
+        Intent intent = getIntent();
+        String selectedGameName = intent.getStringExtra("selectedGameName");
 
         // Populate the EditText with the selected game data
+        Game selectedGameData = gameManager.getGameByName(selectedGameName);
         if (selectedGameData != null) {
-            gameNameEditText.setText(selectedGameData.getName());
+            gameNameEditText.setText(selectedGameData.getGameName());
             gamepriceEditText.setText(String.valueOf(selectedGameData.getPrice()));
             gamedescriptionEditText.setText(selectedGameData.getDescription());
         }
@@ -47,8 +51,8 @@ public class DeletegameActivity extends AppCompatActivity {
                 // Retrieve the game name from the EditText field
                 String gameName = gameNameEditText.getText().toString();
 
-                // Delete the game data from SQLite
-                boolean success = gameManager.deleteGameByName(gameName);
+                // Delete the game data from SQLite and related GameGenre data
+                boolean success = gameManager.deleteGameAndGenres(gameName);
 
                 if (success) {
                     // If deletion is successful, go back to game_editlist_Activity
@@ -56,8 +60,7 @@ public class DeletegameActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish(); // Finish the current activity to prevent going back to it from the next activity
                 } else {
-                    // Handle deletion failure, e.g., display a toast
-                    gameManager.showToast("Failed to delete the game");
+                    // show a message that fail to delete
                 }
             }
         });
@@ -65,29 +68,38 @@ public class DeletegameActivity extends AppCompatActivity {
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Retrieve the game name from the EditText field
-                String gameName = gameNameEditText.getText().toString();
+                // Retrieve the updated values from the EditText fields
+                String updatedGameName = gameNameEditText.getText().toString();
+                String updatedGamePriceText = gamepriceEditText.getText().toString();
+                String updatedGameDescription = gamedescriptionEditText.getText().toString();
 
-                // Check if gameName is empty or null
-                if (TextUtils.isEmpty(gameName)) {
-                    gameManager.showToast("Please enter a valid game name");
+                // Retrieve the old game name
+                Intent intent = getIntent();
+                String selectedGameName = intent.getStringExtra("selectedGameName");
+
+                // Check for empty fields and handle parsing errors
+                if (TextUtils.isEmpty(updatedGameName) || TextUtils.isEmpty(updatedGamePriceText)) {
+                    Toast.makeText(DeletegameActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                // Retrieve the game data from SQLite based on the game name
-                game_data selectedGameData = gameManager.getGameByName(gameName);
+                try {
+                    double updatedGamePrice = Double.parseDouble(updatedGamePriceText);
 
-                if (selectedGameData != null) {
-                    // If the game data is found, go to pick_gerne2Activity
-                    Intent intent = new Intent(DeletegameActivity.this, pick_gerne2Activity.class);
-                    intent.putExtra("selectedGameData", (Parcelable) selectedGameData);
-                    startActivity(intent);
-                } else {
-                    // Handle the case where the game data is not found, e.g., display a toast
-                    gameManager.showToast("Game not found");
+                    // Start an activity for editing the game, passing both old and updated data
+                    Intent editIntent = new Intent(DeletegameActivity.this, pick_gerne2Activity.class);
+                    editIntent.putExtra("selectedGameName", selectedGameName);
+                    editIntent.putExtra("updatedGameName", updatedGameName);
+                    editIntent.putExtra("updatedGamePrice", updatedGamePrice);
+                    editIntent.putExtra("updatedGameDescription", updatedGameDescription);
+                    startActivity(editIntent);
+                } catch (NumberFormatException e) {
+                    // Handle the case where the user entered an invalid double
+                    Toast.makeText(DeletegameActivity.this, "Invalid price format", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

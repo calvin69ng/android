@@ -14,14 +14,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tutorial3android.manager.UserManager;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class loginActivity extends AppCompatActivity {
 
     private EditText et_username, et_password;
-    private user_dbmanager userDBManager;
-    private admin_dbmanager adminDBManager;
+    private UserManager UserManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +33,7 @@ public class loginActivity extends AppCompatActivity {
         Button btn_login = findViewById(R.id.login_button);
         et_username = findViewById(R.id.username_login_edit_text);
         et_password = findViewById(R.id.password_login_edit_text);
-        userDBManager = new user_dbmanager(this);
-        adminDBManager = new admin_dbmanager(this);
+        UserManager = new UserManager(this);
 
         String text = "Register";
 
@@ -58,59 +58,33 @@ public class loginActivity extends AppCompatActivity {
                 String username = et_username.getText().toString();
                 String password = et_password.getText().toString();
 
-                if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)){
+                if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
                     Toast.makeText(loginActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
-                }else {
-                    userLoginProcess(username,password);
+                } else {
+                    userLoginProcess(username, password);
                 }
             }
 
             private void userLoginProcess(String username, String password) {
-                // Check if the username contains "@admin"
-                if (username.contains("@admin")) {
-                    // This is an admin login
-                    UserData admin = adminDBManager.getAdminByUsername(username);
+                if (UserManager.isUserExists(username, password)) {
+                    // User credentials are correct
+                    // Store username in SharedPreferences
+                    SharedPreferences preferences = getSharedPreferences("user_info", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putString("username", username);
+                    editor.apply();
 
-                    if (admin != null && admin.getPassword().equals(password)) {
-                        // Admin credentials are correct
-                        // Store username in SharedPreferences
-                        SharedPreferences preferences = getSharedPreferences("user_info", MODE_PRIVATE);
-                        SharedPreferences.Editor editor = preferences.edit();
-                        editor.putString("username", username);
-                        editor.apply();
-                        // You can add the logic to navigate to the admin page here
-                        Toast.makeText(loginActivity.this, "Admin login successful", Toast.LENGTH_SHORT).show();
-                        // Example: Navigate to admin page
-                        Intent adminIntent = new Intent(loginActivity.this, adminpage.class);
-                        startActivity(adminIntent);
-                    } else {
-                        // Admin credentials are incorrect
-                        Toast.makeText(loginActivity.this, "Invalid admin", Toast.LENGTH_SHORT).show();
-                    }
+                    // Navigate to user page
+                    Intent userIntent = new Intent(loginActivity.this, usermenuActivity.class);
+                    startActivity(userIntent);
+                    Toast.makeText(loginActivity.this, "User login successful", Toast.LENGTH_SHORT).show();
                 } else {
-                    // This is a user login
-                    UserData user = userDBManager.getUserByUsername(username);
-
-                    if (user != null && user.getPassword().equals(password)) {
-                        // User credentials are correct
-                        // Store username in SharedPreferences
-                        SharedPreferences preferences = getSharedPreferences("user_info", MODE_PRIVATE);
-                        SharedPreferences.Editor editor = preferences.edit();
-                        editor.putString("username", username);
-                        editor.apply();                        // You can add the logic to navigate to the user page here
-                        Toast.makeText(loginActivity.this, "User login successful", Toast.LENGTH_SHORT).show();
-                        // Example: Navigate to user page
-                        Intent userIntent = new Intent(loginActivity.this, usermenuActivity.class);
-                        startActivity(userIntent);
-                    } else {
-                        // User credentials are incorrect
-                        Toast.makeText(loginActivity.this, "Invalid user", Toast.LENGTH_SHORT).show();
-                    }
+                    // User credentials are incorrect
+                    Toast.makeText(loginActivity.this, "Invalid username or password", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
     }
 
-
-}
+    }

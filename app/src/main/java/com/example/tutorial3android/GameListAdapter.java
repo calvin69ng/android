@@ -57,6 +57,8 @@ public class GameListAdapter extends RecyclerView.Adapter<GameListAdapter.GameVi
     @Override
     public void onBindViewHolder(@NonNull GameViewHolder holder, int position) {
         String gameName = gameNames.get(position);
+        Log.d(TAG, "onBindViewHolder: Game name at position " + position + ": " + gameName);
+
         holder.gameNameTextView.setText(gameName);
 
         // Set click listener for the item
@@ -107,7 +109,7 @@ public class GameListAdapter extends RecyclerView.Adapter<GameListAdapter.GameVi
 
         public GameViewHolder(@NonNull View itemView) {
             super(itemView);
-            gameNameTextView = itemView.findViewById(R.id.textViewGameName);
+            gameNameTextView = itemView.findViewById(R.id.messageTextView);
         }
     }
 

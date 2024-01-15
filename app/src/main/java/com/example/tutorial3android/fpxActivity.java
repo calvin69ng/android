@@ -3,12 +3,19 @@ package com.example.tutorial3android;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.service.autofill.UserData;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.tutorial3android.data.Income;
+import com.example.tutorial3android.manager.IncomeManager;
+import com.example.tutorial3android.manager.NotificationManager;
+import com.example.tutorial3android.data.Notification;
+import com.example.tutorial3android.manager.UserGameManager;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -50,41 +57,14 @@ public class fpxActivity extends AppCompatActivity {
         });
     }
 
-    private UserData getUserData(String username) {
-        // Implement this method to retrieve UserData from your data source
-        // (e.g., database, shared preferences, etc.)
-
-        user_dbmanager dbManager = new user_dbmanager(fpxActivity.this);  // Using the activity's context
-
-
-        // Assuming you have a method to get UserData by username from your database manager
-        UserData userData = dbManager.getUserByUsername(username);
-
-        dbManager.close();
-
-        return userData;
-    }
-
-    private void updateUserData(UserData userData) {
-        // Implement this method to update UserData in your data source
-        // (e.g., database, shared preferences, etc.)
-
-        user_dbmanager dbManager = new user_dbmanager(fpxActivity.this);  // Using the activity's context
-
-
-        // Assuming you have a method to update UserData in your database manager
-        dbManager.updateUserData(userData);
-
-        dbManager.close();
-    }
 
     private void handlePayment(List<String> selectedGameNames, double totalPrice, String username) {
         // Create user-game associations and store them
-        UserGameDAO userGameDAO = new UserGameDAO(fpxActivity.this);
+        UserGameManager userGameManager = new UserGameManager(fpxActivity.this);
         for (String gameName : selectedGameNames) {
-            userGameDAO.addUserGameAssociation(username, gameName);
+            userGameManager.addUserGameAssociation(username, gameName);
         }
-        userGameDAO.closeDatabase();
+        userGameManager.closeDatabase();
 
         // Concatenate the game names into a single string
         StringBuilder boughtGamesMessage = new StringBuilder("Bought ");
@@ -97,25 +77,21 @@ public class fpxActivity extends AppCompatActivity {
 
         // Create NotificationData
         String receiver = username + " ";  // Concatenate the username
-        NotificationData notificationData = new NotificationData(
-                System.currentTimeMillis(),
+        Notification notificationData = new Notification(
                 "system",
                 boughtGamesMessage.toString(),
-                new Date(),
-                receiver
+                receiver,
+                String.valueOf(new Date().getTime())
         );
 
-        // Log the NotificationData
-        Log.d(TAG, "NotificationData: " + notificationData.toString());
+        // Insert notificationData into the database
+        NotificationManager notificationManager = new NotificationManager(fpxActivity.this);
+        notificationManager.insertNotification(notificationData);
+        notificationManager.closeDatabase();
 
-        // Create IncomeData
-        IncomeData incomeData = new IncomeData(username, totalPrice, new Date(), selectedGameNames);
-
-        // Log the IncomeData
-        Log.d(TAG, "IncomeData: " + incomeData.toString());
-
-        // Save notificationData and incomeData to wherever needed
-        // For example, you can store them in a database or use them in your app as required
+        // Create Income data
+        IncomeManager incomeManager = new IncomeManager(fpxActivity.this);
+        incomeManager.insertIncome(new Income(username, totalPrice, null, String.valueOf(new Date().getTime())));  // Assuming you don't have a message for Income
 
         // Navigate to payment_successActivity
         Intent intent = new Intent(fpxActivity.this, payment_successActivity.class);

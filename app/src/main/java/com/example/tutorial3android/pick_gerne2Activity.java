@@ -11,6 +11,13 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.tutorial3android.data.Game;
+import com.example.tutorial3android.data.GameGenre;
+import com.example.tutorial3android.data.Genre;
+import com.example.tutorial3android.manager.GameManager;
+import com.example.tutorial3android.manager.GameGenreManager;
+import com.example.tutorial3android.manager.GenreManager;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -23,15 +30,15 @@ public class pick_gerne2Activity extends AppCompatActivity {
     private ListView genreListView;
     private Button backButton, nextButton;
     private GenreManager genreManager;
-    private List<GenreData> genreDataList;
-    private GenreDataAdapter adapter;
-    private Set<GenreData> selectedGenres = new HashSet<>();
+    private List<Genre> genreList;
+    private PickGerne2DataAdapter adapter;
+    private Set<Genre> selectedGenres = new HashSet<>();
     private String gameName;
     private double price;
     private String description;
     private long selectedGameId;
-    private List<GenreData> preSelectedGenres = new ArrayList<>();
-
+    private String selectedGameName;
+    private List<Genre> preSelectedGenres = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +53,12 @@ public class pick_gerne2Activity extends AppCompatActivity {
         genreManager.open();
 
         Intent intent = getIntent();
-        gameName = intent.getStringExtra("gameName");
-        price = intent.getDoubleExtra("price", 0.0);
-        description = intent.getStringExtra("description");
-        selectedGameId = intent.getLongExtra("gameId", -1);
+        selectedGameName = getIntent().getStringExtra("selectedGameName");
+        String updatedGameName = intent.getStringExtra("updatedGameName");
+        double updatedGamePrice = intent.getDoubleExtra("updatedGamePrice", 0.0);
+        String updatedGameDescription = intent.getStringExtra("updatedGameDescription");
+
+        Game updatedGameData = new Game(updatedGameName, updatedGamePrice, updatedGameDescription);
 
         initializeViews();
         setupListeners();
@@ -65,18 +74,28 @@ public class pick_gerne2Activity extends AppCompatActivity {
     }
 
     private void initializeViews() {
-        genreDataList = genreManager.getAllGenresList();
+        genreList = genreManager.getAllGenresList();
 
-        for (GenreData genre : genreDataList) {
+        List<String> selectedGenresForGame = new GameGenreManager(this).getGameNamesByGenre(selectedGameName);
+
+        for (String genreName : selectedGenresForGame) {
+            Log.d(TAG, "Selected genre for the game: " + genreName);
+        }
+        for (Genre genre : genreList) {
             if (genre != null) {
-                Log.d(TAG, "Genre: " + genre.getGenres());
+                Log.d(TAG, "Genre: " + genre.getGenreName());
+
+                if (selectedGenresForGame.contains(genre.getGenreName())) {
+                    genre.setSelected(true);
+                } else {
+                    genre.setSelected(false);
+                }
             } else {
                 Log.d(TAG, "Genre is null");
             }
         }
 
-        // Fetch pre-selected genres from the database based on the selected game
-        adapter = new GenreDataAdapter(this, genreDataList, selectedGenres, preSelectedGenres);
+        adapter = new PickGerne2DataAdapter(this, genreList, selectedGenres);
         genreListView.setAdapter(adapter);
     }
 
@@ -84,7 +103,7 @@ public class pick_gerne2Activity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                navigateToAddGenre();
+                navigateToAddGenreDeletegame();
             }
         });
 
@@ -103,43 +122,46 @@ public class pick_gerne2Activity extends AppCompatActivity {
         });
     }
 
-    private void navigateToAddGenre() {
-        Intent intent = new Intent(pick_gerne2Activity.this, DeletegameActivity.class);
+    private void navigateToAddGenreDeletegame() {
+        Intent intent = new Intent(pick_gerne2Activity.this, game_editlist_Activity.class);
         startActivity(intent);
     }
 
     private void handleGenreSelection(View view, int position) {
-        Log.d(TAG, "Selected position: " + position);
+        Genre selectedGenre = genreList.get(position);
+        Log.d(TAG, "Selected genre: " + selectedGenre.getGenreName());
 
-        GenreData selectedGenre = genreDataList.get(position);
+        boolean isRelatedToSelectedGame = new GameGenreManager(this).getGameNamesByGenre(selectedGameName)
+                .contains(selectedGenre.getGenreName());
 
-        if (selectedGenres.contains(selectedGenre)) {
+        if (selectedGenre.isSelected()) {
             selectedGenres.remove(selectedGenre);
-            Log.d(TAG, "Deselected position: " + position);
+            selectedGenre.setSelected(false);
+            view.setBackgroundColor(getResources().getColor(isRelatedToSelectedGame ? R.color.selected_color : R.color.white));
+            Log.d(TAG, "Deselected genre: " + selectedGenre.getGenreName());
         } else {
             selectedGenres.add(selectedGenre);
-            Log.d(TAG, "Selected position: " + position);
+            selectedGenre.setSelected(true);
+            view.setBackgroundColor(getResources().getColor(R.color.selected_color));
+            Log.d(TAG, "Selected genre: " + selectedGenre.getGenreName());
         }
 
-        // Update the adapter to reflect the changes in selected genres
-        adapter.updateData(genreDataList, selectedGenres);
+        adapter.updateData(selectedGenres);
     }
 
     private void navigateToAdminPage() {
         if (!selectedGenres.isEmpty()) {
-            game_data gameData = new GameHelper(
-                    findViewById(R.id.editTextText),
-                    findViewById(R.id.editTextText2),
-                    findViewById(R.id.editTextText3))
-                    .getGameData(
-                            gameName,
-                            price,
-                            description,
-                            convertGenreSetToList(selectedGenres));
+            Game updatedGameData = getIntent().getParcelableExtra("updatedGameData");
 
-            long gameId = new GameManager(pick_gerne2Activity.this).updateGame(gameData);
+            long gameId = new GameManager(pick_gerne2Activity.this).updateGame(selectedGameName, updatedGameData);
 
             if (gameId != -1) {
+                new GameGenreManager(pick_gerne2Activity.this).deleteGenresByGameName(selectedGameName);
+
+                for (Genre selectedGenre : selectedGenres) {
+                    new GameGenreManager(pick_gerne2Activity.this).insertGameGenre(new GameGenre(updatedGameData.getGameName(), selectedGenre.getGenreName()));
+                }
+
                 Intent adminIntent = new Intent(pick_gerne2Activity.this, game_editlist_Activity.class);
                 adminIntent.putExtra("gameId", gameId);
                 startActivity(adminIntent);
@@ -149,13 +171,5 @@ public class pick_gerne2Activity extends AppCompatActivity {
         } else {
             Toast.makeText(pick_gerne2Activity.this, "Please select at least one genre", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private List<String> convertGenreSetToList(Set<GenreData> genreDataSet) {
-        List<String> genreList = new ArrayList<>();
-        for (GenreData genre : genreDataSet) {
-            genreList.addAll(genre.getGenres());
-        }
-        return genreList;
     }
 }

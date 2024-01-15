@@ -16,19 +16,19 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.tutorial3android.data.User;
+import com.example.tutorial3android.manager.UserManager;
+
+
 @SuppressWarnings("all")
 public class registerActivity extends AppCompatActivity {
 
     private EditText et_email, et_username, et_password, et_comfirm_password;
     private Button register;
-    private user_dbmanager userDBManager;
-    private admin_dbmanager adminDBManager;
-
+    private UserManager UserManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
@@ -51,13 +51,12 @@ public class registerActivity extends AppCompatActivity {
         textView.setText(ss);
         textView.setMovementMethod(LinkMovementMethod.getInstance());
 
-        et_email = (EditText) findViewById(R.id.email_register_edit_text);
-        et_username = (EditText) findViewById(R.id.user_register_edit_text);
-        et_password = (EditText) findViewById(R.id.password_register_edit_text);
-        et_comfirm_password = (EditText) findViewById(R.id.comfirm_password_register_edit_text);
-        register = (Button) findViewById(R.id.register_button);
-        userDBManager = new user_dbmanager(this);
-        adminDBManager = new admin_dbmanager(this);
+        et_email = findViewById(R.id.email_register_edit_text);
+        et_username = findViewById(R.id.user_register_edit_text);
+        et_password = findViewById(R.id.password_register_edit_text);
+        et_comfirm_password = findViewById(R.id.comfirm_password_register_edit_text);
+        register = findViewById(R.id.register_button);
+        UserManager = new UserManager(this);
 
         register.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,13 +66,9 @@ public class registerActivity extends AppCompatActivity {
                 String password = et_password.getText().toString();
                 String comfirmPassword = et_comfirm_password.getText().toString();
 
-
-                    userRegisterProcess(email,username,password, comfirmPassword);
-
+                userRegisterProcess(email, username, password, comfirmPassword);
             }
         });
-
-
     }
 
     private void userRegisterProcess(String gmail, String username, String password, String comfirmPassword) {
@@ -83,36 +78,19 @@ public class registerActivity extends AppCompatActivity {
             Toast.makeText(registerActivity.this, "Invalid gmail format. Please use a valid @gmail.com address", Toast.LENGTH_SHORT).show();
         } else if (!password.equals(comfirmPassword)) {
             Toast.makeText(registerActivity.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
-        } else if (username.contains("@admin")) {
-            if (adminDBManager.isAdminExists(username)) {
-                Toast.makeText(registerActivity.this, "Admin with this username already exists", Toast.LENGTH_SHORT).show();
-            } else if (adminDBManager.isGmailAdminExists(gmail)) {
-                Toast.makeText(registerActivity.this, "Admin with this Gmail address already exists", Toast.LENGTH_SHORT).show();
-            } else {
-                try {
-                    adminDBManager.insert(gmail, username, password);
-                    Toast.makeText(registerActivity.this, "Admin registration successful", Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                } finally {
-                    adminDBManager.close();
-                }
-                Intent intent = new Intent(this, loginActivity.class);
-                startActivity(intent);
-            }
         } else {
-            if (userDBManager.isUserExists(username)) {
+            if (UserManager.isUserExists(username)) {
                 Toast.makeText(registerActivity.this, "User with this username already exists", Toast.LENGTH_SHORT).show();
-            } else if (userDBManager.isGmailUserExists(gmail)) {
+            } else if (UserManager.isGmailUserExists(gmail)) {
                 Toast.makeText(registerActivity.this, "User with this Gmail address already exists", Toast.LENGTH_SHORT).show();
             } else {
                 try {
-                    userDBManager.insert(gmail, username, password);
+                    UserManager.insertUser(new User(username, gmail, password));
                     Toast.makeText(registerActivity.this, "User registration successful", Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 } finally {
-                    userDBManager.close();
+                    UserManager.close();
                 }
                 Intent intent = new Intent(this, loginActivity.class);
                 startActivity(intent);

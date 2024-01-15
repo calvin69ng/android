@@ -8,6 +8,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.example.tutorial3android.manager.UserManager;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
@@ -15,7 +17,7 @@ import java.util.List;
 
 public class accountActivity extends AppCompatActivity {
 
-    private user_dbmanager dbManager;
+    private UserManager UserManager;
     private ListView listView;
     private Button backButton;
     private ArrayAdapter<String> adapter;
@@ -28,7 +30,7 @@ public class accountActivity extends AppCompatActivity {
         listView = findViewById(R.id.listview4);
         backButton = findViewById(R.id.button9);
 
-        dbManager = new user_dbmanager(this);
+        UserManager = new UserManager(this);
 
         // Fetch usernames from the database
         List<String> usernames = getUsernames();
@@ -47,25 +49,28 @@ public class accountActivity extends AppCompatActivity {
         });
     }
 
-    private List<String> getUsernames() {
+    public List<String> getUsernames() {
         List<String> usernames = new ArrayList<>();
-        Cursor cursor = dbManager.fetch();
 
-        if (cursor.moveToFirst()) {
-            do {
-                // Assuming the username column is at index 2
-                String username = cursor.getString(2);
-                usernames.add(username);
-            } while (cursor.moveToNext());
+        Cursor cursor = UserManager.fetchAllUsers();
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    String username = cursor.getString(cursor.getColumnIndex(UserManager.COLUMN_USERNAME));
+                    usernames.add(username);
+                } while (cursor.moveToNext());
+            }
+
+            cursor.close();
         }
 
-        cursor.close();
         return usernames;
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        dbManager.close();
+        UserManager.close();
     }
 }

@@ -19,7 +19,7 @@ public class usermenuActivity extends AppCompatActivity {
         String username = preferences.getString("username", "");
 
         Button adminpage = findViewById(R.id.btn_addgame);
-        if (username.equals("admin")) {
+        if (username.contains("@admin")) {
             adminpage.setVisibility(View.VISIBLE);
         } else {
             adminpage.setVisibility(View.GONE);
@@ -30,6 +30,15 @@ public class usermenuActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(usermenuActivity.this, SearchActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        Button notification = findViewById(R.id.notification);
+        notification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(usermenuActivity.this, NotificationActivity.class);
                 startActivity(intent);
             }
         });

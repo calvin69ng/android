@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.tutorial3android.manager.GameGenreManager;
+
 import java.util.List;
 
 public class genre_game_list_Activity extends AppCompatActivity {
@@ -26,46 +28,20 @@ public class genre_game_list_Activity extends AppCompatActivity {
         TextView genreNameTextView = findViewById(R.id.textView16);
         recyclerView = findViewById(R.id.notification1);
 
-        // Receive the selected genre data from the intent
         Intent intent = getIntent();
         if (intent.hasExtra("selectedGenre")) {
-            GenreData selectedGenre = (GenreData) intent.getParcelableExtra("selectedGenre");
+            String selectedGenreName = intent.getStringExtra("selectedGenre");
+            Log.d("Debug", "Selected Genre: " + selectedGenreName);
+            genreNameTextView.setText("Games for Genre: " + selectedGenreName);
 
-            // Log the size and contents of the received genre list
-            if (selectedGenre != null && selectedGenre.getGenres() != null) {
-                Log.d("GenreList", "GenreList size: " + selectedGenre.getGenres().size());
-                Log.d("GenreList", "Genres: " + selectedGenre.getGenres());
-            } else {
-                Log.d("GenreList", "Received genre is null or empty");
-            }
+            // Retrieve game names related to the selected genre from the database
+            List<String> relatedGameNames = getRelatedGameNames(selectedGenreName);
 
-            // Display the genre name
-            if (selectedGenre != null && selectedGenre.getGenres() != null && !selectedGenre.getGenres().isEmpty()) {
-                List<String> genres = selectedGenre.getGenres();
+            // Log the size of the relatedGameNames list
+            Log.d("Debug", "Related GameNames Size: " + relatedGameNames.size());
 
-                // Assuming the genreNameTextView is a single TextView to display the genre name
-                String genreName = genres.get(0); // Assuming the genre list contains at least one genre
-                genreNameTextView.setText(genreName);
-
-                // Fetch games for the selected genre using GameManager
-                GameManager gameManager = new GameManager(this);
-                gameManager.open(); // Open the database connection
-
-                // Fetch games based on the selected genre ID
-                List<String> gameNamesForGenre = gameManager.getGameNamesByGenre(selectedGenre.getId());
-
-                // Log the size and contents of the gameNamesForGenre
-                Log.d("GenreList", "GameNamesForGenre size: " + gameNamesForGenre.size());
-                Log.d("GenreList", "GameNamesForGenre contents: " + gameNamesForGenre);
-
-                // Close the database connection
-                gameManager.close();
-
-                // Initialize and set up the RecyclerView
-                setupRecyclerView(gameNamesForGenre);
-            } else {
-                // Handle the case where selectedGenre or its genres are null
-            }
+            // Set up the RecyclerView with the list of related game names
+            setupRecyclerView(relatedGameNames);
         }
 
         Button backButton = findViewById(R.id.button22);
@@ -78,6 +54,12 @@ public class genre_game_list_Activity extends AppCompatActivity {
         });
     }
 
+    private List<String> getRelatedGameNames(String selectedGenreName) {
+        // Use the GameGenreManager to retrieve the related game names from the database
+        GameGenreManager gameGenreManager = new GameGenreManager(this);
+        return gameGenreManager.getGameNamesByGenre(selectedGenreName);
+    }
+
     private void setupRecyclerView(List<String> gameNames) {
         // Initialize the RecyclerView and set up the adapter
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -87,14 +69,14 @@ public class genre_game_list_Activity extends AppCompatActivity {
         gameListAdapter.setOnItemClickListener(new GameListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                // Handle item click, for example, start DeletegameActivity
+                // Handle item click, for example, start buygameActivity
                 String selectedGameName = gameNames.get(position);
                 if (selectedGameName != null) {
-                    // Implement the logic to start DeletegameActivity or perform any action
-                    startDeleteGameActivity(selectedGameName);
+                    // Implement the logic to start buygameActivity or perform any action
+                    startBuyGameActivity(selectedGameName);
                 } else {
                     // Handle the case where the selectedGameName is null
-                    Log.e("GenreDebug", "Invalid game name at position " + position);
+                    // Log an error or show a message
                 }
             }
         });
@@ -102,9 +84,9 @@ public class genre_game_list_Activity extends AppCompatActivity {
         recyclerView.setAdapter(gameListAdapter);
     }
 
-    // Method to start DeletegameActivity
-    private void startDeleteGameActivity(String selectedGameName) {
-        // Implement the logic to start DeletegameActivity
-        // ...
+    private void startBuyGameActivity(String selectedGameName) {
+        Intent intent = new Intent(genre_game_list_Activity.this, buygameActivity.class);
+        intent.putExtra("selectedGameName", selectedGameName);
+        startActivity(intent);
     }
 }

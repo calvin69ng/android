@@ -9,20 +9,22 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.tutorial3android.data.Game;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class GameNamePriceAdapter extends RecyclerView.Adapter<GameNamePriceAdapter.GameNamePriceViewHolder> {
 
-    private List<game_data> gameDataList;
+    private List<Game> gameList;
     private OnItemClickListener onItemClickListener;
 
     public interface OnItemClickListener {
         void onItemClick(int position);
     }
 
-    public GameNamePriceAdapter(List<game_data> gameDataList, OnItemClickListener onItemClickListener) {
-        this.gameDataList = new ArrayList<>(gameDataList);
+    public GameNamePriceAdapter(List<Game> gameList, OnItemClickListener onItemClickListener) {
+        this.gameList = new ArrayList<>(gameList);
         this.onItemClickListener = onItemClickListener;
     }
 
@@ -36,10 +38,10 @@ public class GameNamePriceAdapter extends RecyclerView.Adapter<GameNamePriceAdap
 
     @Override
     public void onBindViewHolder(@NonNull GameNamePriceViewHolder holder, int position) {
-        game_data gameData = gameDataList.get(position);
+        Game game = gameList.get(position);
         holder.gameNumberTextView.setText(String.valueOf(position + 1));
-        holder.gameNameTextView.setText(gameData.getName());
-        holder.gamePriceTextView.setText(String.valueOf(gameData.getPrice()));
+        holder.gameNameTextView.setText(game.getGameName());
+        holder.gamePriceTextView.setText(String.valueOf(game.getPrice()));
 
         // Set click listener for the delete button
         holder.deleteButton.setOnClickListener(new View.OnClickListener() {
@@ -65,19 +67,19 @@ public class GameNamePriceAdapter extends RecyclerView.Adapter<GameNamePriceAdap
 
     @Override
     public int getItemCount() {
-        return gameDataList.size();
+        return gameList.size();
     }
 
-    public void updateList(List<game_data> newList) {
+    public void updateList(List<Game> newList) {
         if (newList != null) {
-            int oldSize = gameDataList.size();
+            int oldSize = gameList.size();
 
             if (!newList.isEmpty()) {
-                gameDataList.clear();
-                gameDataList.addAll(newList);
+                gameList.clear();
+                gameList.addAll(newList);
             }
 
-            int newSize = gameDataList.size();
+            int newSize = gameList.size();
             if (oldSize > newSize) {
                 notifyItemRangeRemoved(newSize, oldSize - newSize);
             } else if (oldSize < newSize) {

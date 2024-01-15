@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.tutorial3android.manager.GameManager;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +20,6 @@ public class AddGameActivity extends AppCompatActivity {
 
     private EditText gameNameEditText, priceEditText, descriptionEditText;
     private Button uploadButton, backButton;
-    private GameHelper gameHelper;
     private GameManager gameManager;
 
     @Override
@@ -32,7 +33,6 @@ public class AddGameActivity extends AppCompatActivity {
         uploadButton = findViewById(R.id.button4);
         backButton = findViewById(R.id.button5);
 
-        gameHelper = new GameHelper(gameNameEditText, priceEditText, descriptionEditText);
         gameManager = new GameManager(this);
 
         uploadButton.setOnClickListener(new View.OnClickListener() {
@@ -66,27 +66,20 @@ public class AddGameActivity extends AppCompatActivity {
         // Convert price to double (you can add validation for this as well)
         double price = Double.parseDouble(priceStr);
 
-        // Retrieve selected genres (you already have this logic)
-        List<String> selectedGenres = getSelectedGenres();
+        // Check if the game already exists
+        if (!gameManager.isGameExist(gameName)) {
+            // Game doesn't exist, proceed to the next activity
 
-        // Pass the retrieved values to getGameData method
-        game_data gameData = gameHelper.getGameData(gameName, price, description, selectedGenres);
-
-        // Don't insert into the database yet, just navigate to the next activity
-        Intent intent = new Intent(AddGameActivity.this, pick_genreActivity.class);
-        intent.putExtra("gameData", (Parcelable) gameData); // Pass the gameData as an extra
-        intent.putExtra("gameName", gameName); // Pass the game name as an extra
-        intent.putExtra("price", price); // Pass the game price as an extra
-        intent.putExtra("description", description); // Pass the game description as an extra
-        startActivity(intent);
+            // Don't insert into the database yet, just navigate to the next activity
+            Intent intent = new Intent(AddGameActivity.this, pick_genreActivity.class);
+            intent.putExtra("gameName", gameName);
+            intent.putExtra("price", price);
+            intent.putExtra("description", description);
+            startActivity(intent);
+        } else {
+            // Game already exists, show a message or handle it as needed
+            Toast.makeText(AddGameActivity.this, "Game with this name already exists", Toast.LENGTH_SHORT).show();
+        }
     }
 
-
-    private List<String> getSelectedGenres() {
-        List<String> selectedGenres = new ArrayList<>();
-        // Add your logic to retrieve selected genres from your UI components
-        // For example, if you have a list of checkboxes for genres, iterate over them and add selected genres to the list
-        // Replace this with your actual logic
-        return selectedGenres;
-    }
 }

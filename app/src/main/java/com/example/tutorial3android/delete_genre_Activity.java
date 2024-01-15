@@ -11,6 +11,9 @@ import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.tutorial3android.helper.DatabaseHelper;
+import com.example.tutorial3android.manager.GenreManager;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +21,7 @@ public class delete_genre_Activity extends AppCompatActivity {
 
     private Button backButton, adminPageButton;
     private ListView listView;
-    private GenreHelper genreHelper;
+    private DatabaseHelper dbHelper;
     private GenreManager genreManager;
     private ArrayAdapter<String> adapter;
 
@@ -31,7 +34,7 @@ public class delete_genre_Activity extends AppCompatActivity {
         adminPageButton = findViewById(R.id.button14);
         listView = findViewById(R.id.listview31);
 
-        genreHelper = new GenreHelper(this);
+        dbHelper = new DatabaseHelper(this);
         genreManager = new GenreManager(this);
 
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -66,26 +69,38 @@ public class delete_genre_Activity extends AppCompatActivity {
     }
 
     private void loadGenres() {
+        // Open the GenreManager's database connection
         genreManager.open();
+
+        // Retrieve all genres from the database using GenreManager's getAllGenres method
         Cursor cursor = genreManager.getAllGenres();
 
+        // Create a list to store genre names
         List<String> genreNames = new ArrayList<>();
 
+        // Check if the cursor is not null and move to the first row
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                String name = cursor.getString(cursor.getColumnIndex(GenreHelper.COLUMN_GENRE_NAME));
+                // Retrieve the genre name from the cursor using the column name
+                String name = cursor.getString(cursor.getColumnIndex(GenreManager.COL_GENRE_NAME));
+
+                // Add the genre name to the list
                 genreNames.add(name);
-            } while (cursor.moveToNext());
+            } while (cursor.moveToNext());  // Move to the next row if available
         }
 
+        // Close the cursor if it is not null
         if (cursor != null) {
             cursor.close();
         }
 
+        // Close the GenreManager's database connection
         genreManager.close();
 
-        // Create and set the adapter
+        // Create an ArrayAdapter to adapt the genreNames list to the ListView
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, genreNames);
+
+        // Set the adapter to the ListView
         listView.setAdapter(adapter);
     }
 
@@ -94,14 +109,6 @@ public class delete_genre_Activity extends AppCompatActivity {
 
         // Implement the deletion logic here using genreManager
         boolean isDeleted = genreManager.deleteGenreByName(genreName);
-
-        if (isDeleted) {
-            // If deletion is successful, show a message
-            genreHelper.showToast("Genre deleted successfully!");
-        } else {
-            // If deletion fails, show an error message
-            genreHelper.showToast("Failed to delete genre.");
-        }
 
         genreManager.close();
 

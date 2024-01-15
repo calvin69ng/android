@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.tutorial3android.manager.UserGameManager;
+
 import java.util.List;
 
 public class playgamelistActivity extends AppCompatActivity {
@@ -28,7 +30,7 @@ public class playgamelistActivity extends AppCompatActivity {
         String username = preferences.getString("username", "");
 
         // Retrieve the list of games associated with the user
-        UserGameDAO userGameDAO = new UserGameDAO(playgamelistActivity.this);
+        UserGameManager userGameDAO = new UserGameManager(playgamelistActivity.this);
         userGameNames = userGameDAO.getGamesForUser(username);
         userGameDAO.closeDatabase();
 

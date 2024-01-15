@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.tutorial3android.data.Game;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,7 +29,8 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private GameNamePriceAdapter adapter;
-    private List<game_data> selectedGamesList = new ArrayList<>();
+    private List<Game> selectedGamesList = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,33 +102,45 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // ... (existing code)
+
     @Override
     protected void onResume() {
         super.onResume();
         updateOnResume();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        saveSelectedGamesToSharedPreferences();
+    }
+
     private void updateOnResume() {
         Intent intent = getIntent();
-        if (intent != null && intent.hasExtra("selectedGameData")) {
-            game_data selectedGameData = (game_data) intent.getSerializableExtra("selectedGameData");
+        if (intent != null && intent.hasExtra("selectedGameName") && intent.hasExtra("selectedGamePrice")) {
+            String selectedGameName = intent.getStringExtra("selectedGameName");
+            double selectedGamePrice = intent.getDoubleExtra("selectedGamePrice", 0.0);
 
-            if (selectedGameData != null) {
-                Log.d(TAG, "onResume: Received Game Data - Name: " + selectedGameData.getName()
-                        + ", Price: " + selectedGameData.getPrice()
-                        + ", Description: " + selectedGameData.getDescription());
-
-                addSelectedGameToRecyclerView(selectedGameData.getName(), selectedGameData.getPrice());
-            }
+            // Add the received game data to the list and update the RecyclerView
+            addSelectedGameToRecyclerView(selectedGameName, selectedGamePrice);
         }
 
         updateTotalPriceTextView();
     }
 
+    private void saveSelectedGamesToSharedPreferences() {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String selectedGamesJson = convertGameListToJson(selectedGamesList);
+        editor.putString(KEY_SELECTED_GAMES, selectedGamesJson);
+        editor.apply();
+    }
+
     private ArrayList<String> getSelectedGameNames() {
         ArrayList<String> selectedGameNames = new ArrayList<>();
-        for (game_data game : selectedGamesList) {
-            selectedGameNames.add(game.getName());
+        for (Game game : selectedGamesList) {
+            selectedGameNames.add(game.getGameName());
         }
         return selectedGameNames;
     }
@@ -134,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
         String savedGamesJson = sharedPreferences.getString(KEY_SELECTED_GAMES, "");
         if (!savedGamesJson.isEmpty()) {
-            List<game_data> savedGamesList = convertJsonToGameList(savedGamesJson);
+            List<Game> savedGamesList = convertJsonToGameList(savedGamesJson);
             selectedGamesList.addAll(savedGamesList);
             updateRecyclerView();
         }
@@ -148,12 +163,12 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    private String convertGameListToJson(List<game_data> gameList) {
+    private String convertGameListToJson(List<Game> gameList) {
         JSONArray jsonArray = new JSONArray();
-        for (game_data game : gameList) {
+        for (Game game : gameList) {
             JSONObject jsonObject = new JSONObject();
             try {
-                jsonObject.put("name", game.getName());
+                jsonObject.put("name", game.getGameName());
                 jsonObject.put("price", game.getPrice());
                 jsonObject.put("description", game.getDescription());
                 jsonArray.put(jsonObject);
@@ -164,8 +179,8 @@ public class MainActivity extends AppCompatActivity {
         return jsonArray.toString();
     }
 
-    private List<game_data> convertJsonToGameList(String json) {
-        List<game_data> gameList = new ArrayList<>();
+    private List<Game> convertJsonToGameList(String json) {
+        List<Game> gameList = new ArrayList<>();
         try {
             JSONArray jsonArray = new JSONArray(json);
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -173,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
                 String name = jsonObject.getString("name");
                 double price = jsonObject.getDouble("price");
                 String description = jsonObject.getString("description");
-                game_data game = new game_data(null, name, price, description, null);
+                Game game = new Game(name, price, description);
                 gameList.add(game);
             }
         } catch (JSONException e) {
@@ -194,10 +209,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void addSelectedGameToRecyclerView(String selectedGameName, double selectedGamePrice) {
+    private void addSelectedGameToRecyclerView(String selectedGameName, double selectedGamePrice) {
         if (!isGameAlreadyAdded(selectedGameName)) {
-            game_data selectedGameData = new game_data(null, selectedGameName, selectedGamePrice, "", null);
-            selectedGamesList.add(selectedGameData);
+            Game selectedGame = new Game(selectedGameName, selectedGamePrice, "");
+            selectedGamesList.add(selectedGame);
             updateRecyclerView();
             updateTotalPriceTextView();
             updateSharedPreferences();
@@ -205,8 +220,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean isGameAlreadyAdded(String selectedGameName) {
-        for (game_data game : selectedGamesList) {
-            if (game.getName().equals(selectedGameName)) {
+        for (Game game : selectedGamesList) {
+            if (game.getGameName().equals(selectedGameName)) {
                 return true;
             }
         }
@@ -227,7 +242,7 @@ public class MainActivity extends AppCompatActivity {
 
     private double calculateTotalPrice() {
         double total = 0;
-        for (game_data game : selectedGamesList) {
+        for (Game game : selectedGamesList) {
             total += game.getPrice();
         }
         return total;

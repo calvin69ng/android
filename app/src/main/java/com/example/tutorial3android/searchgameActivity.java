@@ -14,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.tutorial3android.manager.GameManager;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +38,7 @@ public class searchgameActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.playgamelist);
         gameManager = new GameManager(this);
 
+        // Retrieve all game names from the GameManager
         originalGameNames = gameManager.getAllGameNames();
 
         adapter = new GameListAdapter(originalGameNames);
@@ -69,7 +72,6 @@ public class searchgameActivity extends AppCompatActivity {
             }
         });
 
-
         // Button for navigating back
         Button backButton = findViewById(R.id.button15);
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -81,6 +83,7 @@ public class searchgameActivity extends AppCompatActivity {
             }
         });
     }
+
 
     private void filterList(String query) {
         Log.d(TAG, "filterList: Filtering with query: " + query);
@@ -103,20 +106,14 @@ public class searchgameActivity extends AppCompatActivity {
         adapter.updateList(filteredList);
     }
 
-
     private void startbuygameActivity(String selectedGameName) {
-        game_data selectedGameData = gameManager.getGameByName(selectedGameName);
-
-        if (selectedGameData != null) {
-            Log.d(TAG, "startbuygameActivity: Selected Game Data - Name: " + selectedGameData.getName()
-                    + ", Price: " + selectedGameData.getPrice()
-                    + ", Description: " + selectedGameData.getDescription());
-        } else {
-            Log.e(TAG, "startbuygameActivity: Selected Game Data is null");
-        }
-
+        // Create an intent to start buygameActivity
         Intent intent = new Intent(searchgameActivity.this, buygameActivity.class);
-        intent.putExtra("selectedGameData", (Parcelable) selectedGameData);
+
+        // Pass the selected game name as an extra to the intent
+        intent.putExtra("selectedGameName", selectedGameName);
+
+        // Start the buygameActivity with the intent
         startActivity(intent);
     }
 }

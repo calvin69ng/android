@@ -10,22 +10,22 @@ import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 
+import com.example.tutorial3android.data.Genre;
+
 import java.util.List;
 import java.util.Set;
 
-public class GenreDataAdapter extends ArrayAdapter<GenreData> {
+public class PickGenreDataAdapter extends ArrayAdapter<Genre> {
 
     private Context context;
-    private List<GenreData> genreDataList;
-    private Set<GenreData> selectedGenres;
-    private List<GenreData> preSelectedGenres; // Add this variable to store pre-selected genres
+    private List<Genre> genreList;
+    private Set<Genre> selectedGenres;
 
-    public GenreDataAdapter(Context context, List<GenreData> genreDataList, Set<GenreData> selectedGenres, List<GenreData> preSelectedGenres) {
-        super(context, 0, genreDataList);
+    public PickGenreDataAdapter(Context context, List<Genre> genreList, Set<Genre> selectedGenres) {
+        super(context, 0, genreList);
         this.context = context;
-        this.genreDataList = genreDataList;
+        this.genreList = genreList;
         this.selectedGenres = selectedGenres;
-        this.preSelectedGenres = preSelectedGenres;
     }
 
     @Override
@@ -35,16 +35,13 @@ public class GenreDataAdapter extends ArrayAdapter<GenreData> {
             listItem = LayoutInflater.from(context).inflate(R.layout.list_item_genre_layout, parent, false);
         }
 
-        GenreData currentGenre = genreDataList.get(position);
+        Genre currentGenre = genreList.get(position);
 
-        TextView genreName = listItem.findViewById(R.id.textViewGameName);
+        TextView genreName = listItem.findViewById(R.id.messageTextView);
         genreName.setText(currentGenre.getGenreName());
 
-        // Check if the current genre is pre-selected
-        if (preSelectedGenres != null && preSelectedGenres.contains(currentGenre)) {
-            // Change the background color to indicate pre-selection
-            listItem.setBackgroundColor(ContextCompat.getColor(context, R.color.selected_color));
-        } else if (selectedGenres.contains(currentGenre)) {
+        // Check if the current genre is selected
+        if (selectedGenres.contains(currentGenre)) {
             // Change the background color when selected
             listItem.setBackgroundColor(ContextCompat.getColor(context, R.color.selected_color));
         } else {
@@ -55,8 +52,7 @@ public class GenreDataAdapter extends ArrayAdapter<GenreData> {
         return listItem;
     }
 
-    public void updateData(List<GenreData> genreDataList, Set<GenreData> selectedGenres) {
-        this.genreDataList = genreDataList;
+    public void updateData(Set<Genre> selectedGenres) {
         this.selectedGenres = selectedGenres;
         notifyDataSetChanged();
     }

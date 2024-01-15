@@ -9,11 +9,14 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.tutorial3android.data.Game;
+import com.example.tutorial3android.manager.GameManager;
+
 import java.io.Serializable;
 
 public class buygameActivity extends AppCompatActivity {
 
-    private static final String TAG = "buygame"; // Define TAG here
+    private static final String TAG = "buygame";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,44 +31,39 @@ public class buygameActivity extends AppCompatActivity {
         Button backButton = findViewById(R.id.csgo_fps2);
         Button buyButton = findViewById(R.id.buygame);
 
-        final game_data[] selectedGameData = {null}; // Use an array to hold the reference
-
-        // Retrieve selected game data from the intent
+        // Retrieve the game name from the intent
         Intent intent = getIntent();
-        if (intent != null && intent.hasExtra("selectedGameData")) {
-            selectedGameData[0] = (game_data) intent.getSerializableExtra("selectedGameData");
+        if (intent != null && intent.hasExtra("selectedGameName")) {
+            String selectedGameName = intent.getStringExtra("selectedGameName");
 
-            if (selectedGameData[0] != null) {
-                Log.d(TAG, "onCreate: Selected Game Data - Name: " + selectedGameData[0].getName()
-                        + ", Price: " + selectedGameData[0].getPrice()
-                        + ", Description: " + selectedGameData[0].getDescription());
+            // Use the GameManager to get the game information
+            GameManager gameManager = new GameManager(this);
+            Game selectedGame = gameManager.getGameByName(selectedGameName);
 
+            if (selectedGame != null) {
                 // Display game information
-                gameTitleTextView.setText(selectedGameData[0].getName());
-                priceTextView.setText(String.valueOf(selectedGameData[0].getPrice()));
-                descriptionTextView.setText(selectedGameData[0].getDescription());
+                gameTitleTextView.setText(selectedGame.getGameName());
+                priceTextView.setText(String.valueOf(selectedGame.getPrice()));
+                descriptionTextView.setText(selectedGame.getDescription());
             } else {
-                Log.e(TAG, "onCreate: Selected Game Data is null");
+                Log.e(TAG, "onCreate: Selected Game is null");
             }
         } else {
-            Log.e(TAG, "onCreate: Intent or selectedGameData is null");
+            Log.e(TAG, "onCreate: Intent or selectedGameName is null");
         }
 
         buyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (selectedGameData[0] != null) {
-                    // Start MainActivity with the intent and pass the selected game's data
-                    Intent mainIntent = new Intent(buygameActivity.this, MainActivity.class);
-                    mainIntent.putExtra("selectedGameData", (Serializable) selectedGameData[0]);
-                    startActivity(mainIntent);
+                // Retrieve the displayed game name and price
+                String displayedGameName = gameTitleTextView.getText().toString();
+                double displayedGamePrice = Double.parseDouble(priceTextView.getText().toString());
 
-                    // You can choose whether to finish buygameActivity here or not
-                    // finish();
-                } else {
-                    // Handle the case where selectedGameData is not initialized
-                    Log.e(TAG, "onClick: selectedGameData is not initialized");
-                }
+                // Pass the displayed game data to MainActivity
+                Intent mainIntent = new Intent(buygameActivity.this, MainActivity.class);
+                mainIntent.putExtra("selectedGameName", displayedGameName);
+                mainIntent.putExtra("selectedGamePrice", displayedGamePrice);
+                startActivity(mainIntent);
             }
         });
 
